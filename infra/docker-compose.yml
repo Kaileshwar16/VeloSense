@@ -1,0 +1,97 @@
+name: valeosense
+x-app: &app
+  build:
+    context: ..
+    dockerfile: infra/Dockerfile
+  env_file: ../.env
+  environment: &app-env
+    REDIS_URL: redis://redis:6379/0
+    KAFKA_BOOTSTRAP_SERVERS: redpanda:9092
+    CLICKHOUSE_URL: http://clickhouse:8123
+    DATABASE_URL: postgresql://${POSTGRES_USER:-valeosense}:${POSTGRES_PASSWORD:?Run make setup first}@postgres:5432/${POSTGRES_DB:-valeosense}
+    QUERYFLUX_URL: http://host.docker.internal:18080
+  extra_hosts: ["host.docker.internal:host-gateway"]
+services:
+  redpanda:
+    image: docker.redpanda.com/redpandadata/redpanda:v25.1.9
+    command: [redpanda, start, --smp, '1', --memory, 512M, --reserve-memory, 0M, --overprovisioned, --node-id, '0', --check=false, --kafka-addr, 'internal://0.0.0.0:9092,external://0.0.0.0:19092', --advertise-kafka-addr, 'internal://redpanda:9092,external://localhost:19092']
+    ports: ["127.0.0.1:19092:19092"]
+    volumes: ["redpanda:/var/lib/redpanda/data"]
+    healthcheck:
+      test: [CMD, rpk, cluster, health]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+  redis:
+    image: redis:7.4-alpine
+    command: [redis-server, --appendonly, 'yes', --maxmemory, 256mb, --maxmemory-policy, noeviction]
+    ports: ["127.0.0.1:6379:6379"]
+    volumes: ["redis:/data"]
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-valeosense}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Run make setup first}
+      POSTGRES_DB: ${POSTGRES_DB:-valeosense}
+    ports: ["127.0.0.1:5434:5432"]
+    volumes: ["postgres:/var/lib/postgresql/data"]
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  clickhouse:
+    image: clickhouse/clickhouse-server:25.8-alpine
+    environment:
+      CLICKHOUSE_SKIP_USER_SETUP: '1'
+    ports: ["127.0.0.1:8123:8123"]
+    volumes:
+      - clickhouse:/var/lib/clickhouse
+      - ./clickhouse-memory.xml:/etc/clickhouse-server/config.d/memory.xml:ro
+    healthcheck:
+      test: [CMD, wget, -qO-, http://127.0.0.1:8123/ping]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+  seed:
+    <<: *app
+    command: [python, -m, scripts.seed_metadata]
+    depends_on:
+      postgres: {condition: service_healthy}
+      clickhouse: {condition: service_healthy}
+      redpanda: {condition: service_healthy}
+  backend:
+    <<: *app
+    command: [uvicorn, backend.main:app, --host, 0.0.0.0, --port, '8000']
+    ports: ["127.0.0.1:8000:8000"]
+    depends_on:
+      seed: {condition: service_completed_successfully}
+      redis: {condition: service_healthy}
+  processor:
+    <<: *app
+    command: [python, -m, processor.consumer]
+    depends_on:
+      seed: {condition: service_completed_successfully}
+      redis: {condition: service_healthy}
+    restart: on-failure
+  simulator:
+    <<: *app
+    command: [python, -m, simulator.cli, --vehicles, '100000', --active-vehicles, '1000', --rate, '1000', --duration, '0']
+    depends_on:
+      seed: {condition: service_completed_successfully}
+      processor: {condition: service_started}
+    profiles: [demo]
+  frontend:
+    build: {context: ../frontend}
+    ports: ["127.0.0.1:3000:8080"]
+    depends_on: [backend]
+volumes:
+  redpanda:
+  redis:
+  postgres:
+  clickhouse:

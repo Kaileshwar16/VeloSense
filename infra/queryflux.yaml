@@ -1,0 +1,27 @@
+# Existing open-source QueryFlux, local checkout 5d06d83 (0.3.0).
+# Start with scripts/run_queryflux.sh. No QueryFlux source is copied into ValeoSense.
+queryflux:
+  externalAddress: http://localhost:18080
+  frontends:
+    trinoHttp:
+      enabled: true
+      port: 18080
+      maxConnections: 16
+  persistence:
+    type: inMemory
+  adminApi:
+    port: 19000
+clusters:
+  valeosense-clickhouse:
+    engine: clickHouse
+    endpoint: http://localhost:8123
+    maxRunningQueries: 4
+    maxResultBufferBytes: 16777216
+clusterGroups:
+  analytics:
+    members: [valeosense-clickhouse]
+    maxRunningQueries: 4
+    maxQueuedQueries: 16
+    capacityWaitTimeoutSecs: 10
+routers: []
+routingFallback: analytics

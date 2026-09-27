@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+.env
+node_modules/
+frontend/dist/
+artifacts/*.log
+artifacts/*.pid
+artifacts/*.jsonl
+.DS_Store
+artifacts/queryflux.local.yaml
