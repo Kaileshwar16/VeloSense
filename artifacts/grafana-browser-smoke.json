@@ -1,0 +1,12 @@
+{
+  "verified_at": "2026-09-27T15:51:02.138Z",
+  "browser": "146.0.7680.80",
+  "checks": [
+    "Grafana login",
+    "provisioned dashboard rendered",
+    "real datasource queries without errors",
+    "no JavaScript errors",
+    "actual browser screenshot"
+  ],
+  "passed": true
+}

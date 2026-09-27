@@ -54,6 +54,13 @@ Open **http://localhost:3000**. Enter the `API_KEY` from your local `.env`; do n
 
 For a containerized continuous simulator, use `make demo` instead of `make up` + `make simulator`. It starts safe demo load, not a benchmark. Do not run both simulators simultaneously when measuring performance.
 
+Optional monitoring: after starting the application, run `make monitoring` and open
+[Grafana at localhost:3001](http://localhost:3001/d/valeosense-overview). Log in as
+`admin` with your local `API_KEY` (or set `GRAFANA_ADMIN_PASSWORD` before first start).
+Prometheus and a 14-panel pipeline/routing dashboard are provisioned automatically.
+Use `make monitoring-test` to verify real scrapes and `make monitoring-down` to stop
+only monitoring. The default stack does not start these services. [Monitoring guide](docs/monitoring.md).
+
 ```bash
 # Equivalent core command:
 docker compose --env-file .env -f infra/docker-compose.yml up --build -d
@@ -94,7 +101,7 @@ The committed CSV contains synthetic IDs, 17-character synthetic VINs, fleet, OE
 
 **Native integration is verified:** FastAPI -> authenticated Trino HTTP -> existing QueryFlux -> native ClickHouse -> real persisted history. Only **ClickHouse** is connected; no Redis, PostgreSQL analytical routing, DuckDB, Trino backend, multi-engine failover, or routing benchmark is claimed.
 
-The inspected checkout is `/home/kailesh/work/queryflux`, commit `5d06d83c7552208eff09a7bbfae4c57944338030`, version file `0.3.0`. Upstream README/config/examples and Apache-2.0 LICENSE were inspected. `scripts/run_queryflux.sh` starts its existing build with local library paths and generated static authentication. It does not modify upstream code. The core Compose app defaults to `ANALYTICS_ROUTE=direct` so it does not depend on an external process. See [queryflux.md](docs/queryflux.md) for exact deployment status and verified commands.
+The previously inspected native checkout is `/home/kailesh/work/queryflux`, commit `5d06d83c7552208eff09a7bbfae4c57944338030`, version file `0.3.0`. `scripts/run_queryflux.sh` starts that existing build without modifying upstream. For the verified container route, run `make up-queryflux`: the optional profile uses a digest-pinned upstream image and generated static authentication. The core `make up` command defaults to `ANALYTICS_ROUTE=direct`. See [queryflux.md](docs/queryflux.md) for deployment details and verification commands.
 
 No automatic silent fallback: a configured QueryFlux outage returns 503. Debug responses include the actual successful route, configured engine, and measured wall latency. Read views encapsulate ClickHouse FINAL, and explicit timestamp serialization avoids a tested wire-format issue.
 
@@ -170,7 +177,7 @@ The first measured run sustained a 1K target: 999.73 generated readings/sec. The
 
 ## Future work
 
-Partition-owned consumer state, replay-safe multi-sink checkpointing, durable invalid-event storage, OAuth2/OIDC + JWT + RBAC + tenant isolation, authenticated service links, Parquet archive to S3/MinIO, then Iceberg for schema evolution/snapshots/time travel. Prometheus/Grafana, multi-engine routing, cloud deployment, Kubernetes/Terraform, and predictive-maintenance ML are deferred. **No ML model is required for the current solution.**
+Partition-owned consumer state, replay-safe multi-sink checkpointing, durable invalid-event storage, OAuth2/OIDC + JWT + RBAC + tenant isolation, authenticated service links, Parquet archive to S3/MinIO, then Iceberg for schema evolution/snapshots/time travel. Monitoring notifications/distributed tracing, multi-engine routing, cloud deployment, Kubernetes/Terraform, and predictive-maintenance ML are deferred. Prometheus/Grafana dashboards are available through the optional monitoring profile. **No ML model is required for the current solution.**
 
 ## Open-source components and declarations
 

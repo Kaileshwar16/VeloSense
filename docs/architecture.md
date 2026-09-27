@@ -43,6 +43,13 @@ The React dashboard polls every three seconds after the previous batch completes
 
 ## Observability and estimates
 
+An optional `monitoring` Compose profile adds an internal exporter, Prometheus and
+Grafana. The exporter reads the existing authenticated metrics and routing APIs;
+it omits stale operational values and fails the scrape if upstream reads fail.
+The provisioned dashboard covers pipeline and routing metrics with seven-day /
+512 MB Prometheus retention. See [monitoring.md](monitoring.md) for setup and
+semantics. The core stack has no dependency on these optional services.
+
 JSON metrics expose generated/published counts, backpressure, consumed/accepted/rejected/late/duplicate counts, incidents, committed Kafka lag, latest-batch event latency, process-local errors, API cumulative latency/requests, analytical execution latency, route counters, and concurrency gauges. Metrics have heartbeat timestamps; process restarts reset counters. API health checks Redis/PostgreSQL/ClickHouse; Kafka and processor freshness are separate metrics, and QueryFlux status is based on actual successful analytical requests.
 
 Idling cost is an assumption: 0.8 litres/hour for ICE and INR 100/litre. EV fuel cost is zero; battery idle loss is not modeled financially. The card sums the top 20 idling vehicles for the selected seven-day view, not an unbounded fleet-wide bill. Large telemetry gaps are excluded from integration.

@@ -24,6 +24,8 @@ License checks were made against installed package license files, the local Quer
 | Playwright | Browser verification using installed Chromium | Apache-2.0; installed `@playwright/test/LICENSE` |
 | pytest / Ruff | Testing / lint and formatting | MIT; installed distribution license files |
 | psutil | Benchmark process CPU and memory sampling | BSD-3-Clause; installed LICENSE |
+| Grafana OSS 12.4.1 (optional) | Provisioned operational dashboard | AGPL-3.0; `/usr/share/grafana/LICENSE` inspected in the running image |
+| Prometheus 3.13.3 (optional) | Metrics scraping and retention | Apache-2.0; [versioned LICENSE](https://github.com/prometheus/prometheus/blob/v3.13.3/LICENSE) |
 
 Python, Node.js, Nginx, Chromium, base operating-system images, and their transitive packages retain their upstream licenses. The project does not relicense those distributions. No enterprise Redpanda features, hosted paid services, or commercial SaaS integrations are claimed. Review the version-specific terms before distributing or offering this stack as a service.
 

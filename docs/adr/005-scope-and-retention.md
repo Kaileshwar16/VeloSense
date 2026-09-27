@@ -9,5 +9,9 @@ Flink/Spark, Kubernetes, Iceberg, MinIO and Grafana immediately; or bounded Pyth
 ## Decision
 Use a single processor, polling dashboard, JSON metrics, no result cache, and semaphore-protected analytics. Defer cold storage and all orchestration beyond Compose.
 
+An optional monitoring profile now adds Prometheus and a provisioned Grafana
+dashboard over the JSON metrics API. It is disabled in the default stack and can
+be stopped independently, preserving the original bounded demo scope.
+
 ## Consequences
 The running system is measurable and understandable. Warm history is deleted by TTL rather than archived. Future Parquet export can be upgraded to Iceberg for schema evolution, snapshots, time travel, atomic metadata, and multi-engine analytics. Those capabilities are not implemented here.

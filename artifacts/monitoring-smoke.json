@@ -1,0 +1,14 @@
+{
+  "verified_at": "2026-09-27T15:49:20.653645+00:00",
+  "grafana_version": "12.4.1",
+  "dashboard_uid": "valeosense-overview",
+  "panels": 14,
+  "checks": [
+    "authenticated Grafana health and dashboard",
+    "provisioned Prometheus datasource proxy",
+    "real exporter scrape up=1",
+    "API and processor freshness metrics present",
+    "all dashboard PromQL expressions accepted"
+  ],
+  "passed": true
+}

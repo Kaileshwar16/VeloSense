@@ -1,6 +1,6 @@
 PY := .venv/bin/python
 COMPOSE := docker compose --env-file .env -f infra/docker-compose.yml
-.PHONY: setup seed up infra simulator demo test integration lint frontend-build benchmark down queryflux api processor sql-evidence browser-test routed-api up-queryflux
+.PHONY: setup seed up infra simulator demo test integration lint frontend-build benchmark down queryflux api processor sql-evidence browser-test routed-api up-queryflux monitoring monitoring-down monitoring-test
 setup:
 	python3 scripts/setup_env.py
 	python3 -m venv .venv
@@ -44,5 +44,11 @@ processor:
 	$(PY) -m processor.consumer
 browser-test:
 	cd frontend && node scripts/smoke.mjs
+monitoring:
+	$(COMPOSE) --profile monitoring up --build -d --wait metrics-exporter prometheus grafana
+monitoring-down:
+	$(COMPOSE) --profile monitoring stop grafana prometheus metrics-exporter
+monitoring-test:
+	$(PY) -m scripts.verify_monitoring
 down:
-	$(COMPOSE) --profile demo --profile queryflux down
+	$(COMPOSE) --profile demo --profile queryflux --profile monitoring down

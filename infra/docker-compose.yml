@@ -9,7 +9,7 @@ x-app: &app
     KAFKA_BOOTSTRAP_SERVERS: redpanda:9092
     CLICKHOUSE_URL: http://clickhouse:8123
     DATABASE_URL: postgresql://${POSTGRES_USER:-valeosense}:${POSTGRES_PASSWORD:?Run make setup first}@postgres:5432/${POSTGRES_DB:-valeosense}
-    QUERYFLUX_URL: http://queryflux:18080
+    QUERYFLUX_URL: ${QUERYFLUX_COMPOSE_URL:-http://queryflux:18080}
     ANALYTICS_ROUTE: ${ANALYTICS_ROUTE:-direct}
   extra_hosts: ["host.docker.internal:host-gateway"]
 services:
@@ -118,8 +118,60 @@ services:
       timeout: 5s
       retries: 12
     depends_on: [backend]
+  metrics-exporter:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile
+    environment:
+      API_KEY: ${API_KEY:?Run make setup first}
+      MONITORING_API_URL: http://backend:8000
+    command: [uvicorn, backend.monitoring:app, --host, 0.0.0.0, --port, '9100']
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://localhost:9100/health')"]
+      interval: 10s
+      timeout: 3s
+      retries: 12
+    profiles: [monitoring]
+  prometheus:
+    image: prom/prometheus:v3.13.3
+    command: [--config.file=/etc/prometheus/prometheus.yml, --storage.tsdb.retention.time=7d, --storage.tsdb.retention.size=512MB]
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus:/prometheus
+    healthcheck:
+      test: [CMD, wget, -qO-, http://127.0.0.1:9090/-/ready]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    depends_on:
+      metrics-exporter: {condition: service_healthy}
+    profiles: [monitoring]
+  grafana:
+    image: grafana/grafana:12.4.1
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-${API_KEY:?Run make setup first}}
+      GF_USERS_ALLOW_SIGN_UP: 'false'
+      GF_AUTH_ANONYMOUS_ENABLED: 'false'
+      GF_ANALYTICS_REPORTING_ENABLED: 'false'
+      GF_ANALYTICS_CHECK_FOR_UPDATES: 'false'
+    ports: ["127.0.0.1:3001:3000"]
+    volumes:
+      - grafana:/var/lib/grafana
+      - ./monitoring/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/dashboards:/var/lib/grafana/dashboards:ro
+    healthcheck:
+      test: [CMD, wget, -qO-, http://127.0.0.1:3000/api/health]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    depends_on:
+      prometheus: {condition: service_healthy}
+    profiles: [monitoring]
 volumes:
   redpanda:
   redis:
   postgres:
   clickhouse:
+  prometheus:
+  grafana:
