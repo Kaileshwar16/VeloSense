@@ -9,7 +9,7 @@ x-app: &app
     KAFKA_BOOTSTRAP_SERVERS: redpanda:9092
     CLICKHOUSE_URL: http://clickhouse:8123
     DATABASE_URL: postgresql://${POSTGRES_USER:-valeosense}:${POSTGRES_PASSWORD:?Run make setup first}@postgres:5432/${POSTGRES_DB:-valeosense}
-    QUERYFLUX_URL: http://host.docker.internal:18080
+    QUERYFLUX_URL: http://queryflux:18080
     ANALYTICS_ROUTE: ${ANALYTICS_ROUTE:-direct}
   extra_hosts: ["host.docker.internal:host-gateway"]
 services:
@@ -59,6 +59,23 @@ services:
       interval: 5s
       timeout: 3s
       retries: 30
+  queryflux:
+    image: ghcr.io/lakeops-org/queryflux@sha256:1da899cddf3c95c41ac074d8dd6f3de59dd10050abc344fdd19528e874b4f2e3
+    entrypoint: [/usr/bin/tini, --, /app/queryflux]
+    command: [--config, /etc/queryflux/config.yaml]
+    environment:
+      PYTHONPATH: /opt/venv/lib/python3.12/site-packages
+      QUERYFLUX_ADMIN_PASSWORD: ${API_KEY:?Run make setup first}
+    volumes: ["../artifacts/queryflux.compose.yaml:/etc/queryflux/config.yaml:ro"]
+    ports: ["127.0.0.1:18081:18080"]
+    depends_on:
+      clickhouse: {condition: service_healthy}
+    healthcheck:
+      test: [CMD, curl, -fsS, http://127.0.0.1:19000/health]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    profiles: [queryflux]
   seed:
     <<: *app
     command: [python, -m, scripts.seed_metadata]

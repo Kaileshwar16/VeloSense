@@ -1,11 +1,12 @@
 PY := .venv/bin/python
 COMPOSE := docker compose --env-file .env -f infra/docker-compose.yml
-.PHONY: setup seed up infra simulator demo test integration lint frontend-build benchmark down queryflux api processor sql-evidence browser-test routed-api
+.PHONY: setup seed up infra simulator demo test integration lint frontend-build benchmark down queryflux api processor sql-evidence browser-test routed-api up-queryflux
 setup:
 	python3 scripts/setup_env.py
 	python3 -m venv .venv
 	$(PY) -m pip install -r requirements.lock
 	cd frontend && npm ci
+	$(PY) -m scripts.queryflux_config --compose
 seed:
 	$(PY) -m scripts.generate_vehicles
 	$(PY) -m scripts.seed_metadata
@@ -32,6 +33,9 @@ sql-evidence:
 	$(PY) -m scripts.sql_optimization
 queryflux:
 	bash scripts/run_queryflux.sh
+up-queryflux:
+	$(PY) -m scripts.queryflux_config --compose
+	ANALYTICS_ROUTE=queryflux $(COMPOSE) --profile queryflux up --build -d
 routed-api:
 	ANALYTICS_ROUTE=queryflux $(COMPOSE) up -d --no-deps --force-recreate backend
 api:
@@ -41,4 +45,4 @@ processor:
 browser-test:
 	cd frontend && node scripts/smoke.mjs
 down:
-	$(COMPOSE) --profile demo down
+	$(COMPOSE) --profile demo --profile queryflux down
