@@ -170,7 +170,8 @@ def create_app(settings: Settings | None = None, live=None, metadata=None, analy
     ):
         await known(vehicle_id)
         return await app.state.analytics.execute(
-            f"SELECT CAST(timestamp AS VARCHAR) AS timestamp, speed_kmh, lat, lon, fuel_pct, soc_pct, event_type "
+            "SELECT concat(CAST(timestamp AS VARCHAR), 'Z') AS timestamp, "
+            "speed_kmh, lat, lon, fuel_pct, soc_pct, event_type "
             f"FROM valeosense.telemetry_read WHERE vehicle_id = '{vehicle_id}' AND {where(days)} "
             f"ORDER BY timestamp DESC LIMIT {limit}"
         )
@@ -238,7 +239,8 @@ def create_app(settings: Settings | None = None, live=None, metadata=None, analy
     @app.get("/api/v1/analytics/events", dependencies=auth)
     async def events(days: int = Query(1, ge=1, le=30), fleet_id: FleetFilter = None):
         return await app.state.analytics.execute(
-            f"SELECT CAST(date_trunc('minute', timestamp) AS VARCHAR) AS minute, event_type, COUNT(*) AS events, "
+            "SELECT concat(CAST(date_trunc('minute', timestamp) AS VARCHAR), 'Z') AS minute, "
+            "event_type, COUNT(*) AS events, "
             f"AVG(speed_kmh) AS average_speed_kmh FROM valeosense.telemetry_read "
             f"WHERE {where(days, fleet_id)} GROUP BY minute, event_type "
             "ORDER BY minute DESC, event_type LIMIT 240"
