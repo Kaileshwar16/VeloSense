@@ -1,4 +1,5 @@
 """Small explicit SQL adapters. No telemetry is written to PostgreSQL."""
+
 import json
 from pathlib import Path
 
@@ -14,23 +15,25 @@ class ClickHouse:
         self.client = httpx.Client(base_url=settings.clickhouse_url, timeout=30)
 
     def execute(self, sql: str, params: dict | None = None) -> str:
-        response = self.client.post('/', content=sql, params=params)
+        response = self.client.post("/", content=sql, params=params)
         response.raise_for_status()
         return response.text
 
     def query(self, sql: str, params: dict | None = None) -> list[dict]:
-        return json.loads(self.execute(sql + ' FORMAT JSON', params))['data']
+        return json.loads(self.execute(sql + " FORMAT JSON", params))["data"]
 
     def insert(self, table: str, rows: list[dict]):
-        if table not in ('telemetry', 'alerts'):
-            raise ValueError('unsupported write table')
+        if table not in ("telemetry", "alerts"):
+            raise ValueError("unsupported write table")
         if rows:
-            payload = '\n'.join(json.dumps(row, separators=(',', ':')) for row in rows)
-            self.execute(f'INSERT INTO valeosense.{table} FORMAT JSONEachRow\n' + payload,
-                         {'date_time_input_format': 'best_effort'})
+            payload = "\n".join(json.dumps(row, separators=(",", ":")) for row in rows)
+            self.execute(
+                f"INSERT INTO valeosense.{table} FORMAT JSONEachRow\n" + payload,
+                {"date_time_input_format": "best_effort"},
+            )
 
     def initialize(self):
-        for statement in Path('infra/clickhouse.sql').read_text().split(';'):
+        for statement in Path("infra/clickhouse.sql").read_text().split(";"):
             if statement.strip():
                 self.execute(statement)
 
@@ -47,10 +50,12 @@ class Metadata:
             return connection.execute(sql, parameters).fetchall()
 
     def vehicles(self, limit: int, offset: int, fleet_id: str | None = None):
-        clause, params = ('WHERE fleet_id = %s', (fleet_id,)) if fleet_id else ('', ())
-        return self.query(f'SELECT * FROM vehicles {clause} ORDER BY vehicle_id LIMIT %s OFFSET %s',
-                          params + (limit, offset))
+        clause, params = ("WHERE fleet_id = %s", (fleet_id,)) if fleet_id else ("", ())
+        return self.query(
+            f"SELECT * FROM vehicles {clause} ORDER BY vehicle_id LIMIT %s OFFSET %s",
+            params + (limit, offset),
+        )
 
     def vehicle(self, vehicle_id: str):
-        rows = self.query('SELECT * FROM vehicles WHERE vehicle_id = %s', (vehicle_id,))
+        rows = self.query("SELECT * FROM vehicles WHERE vehicle_id = %s", (vehicle_id,))
         return rows[0] if rows else None

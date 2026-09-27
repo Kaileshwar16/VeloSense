@@ -5,30 +5,39 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 SCENARIOS = (
-    'NORMAL', 'IDLING', 'SPEEDING', 'HARSH_BRAKE', 'HARSH_ACCELERATION',
-    'ENGINE_FAULT', 'LOW_ENERGY', 'OFFLINE', 'DUPLICATE_EVENT',
-    'OUT_OF_ORDER_EVENT', 'MALFORMED_EVENT', 'NETWORK_RECOVERY_BURST',
+    "NORMAL",
+    "IDLING",
+    "SPEEDING",
+    "HARSH_BRAKE",
+    "HARSH_ACCELERATION",
+    "ENGINE_FAULT",
+    "LOW_ENERGY",
+    "OFFLINE",
+    "DUPLICATE_EVENT",
+    "OUT_OF_ORDER_EVENT",
+    "MALFORMED_EVENT",
+    "NETWORK_RECOVERY_BURST",
 )
 
 
 class Vehicle(BaseModel):
-    vehicle_id: str = Field(pattern=r'^V\d{6}$')
-    vin: str = Field(pattern=r'^SYN\d{14}$')
-    fleet_id: str = Field(pattern=r'^F\d{3}$')
+    vehicle_id: str = Field(pattern=r"^V\d{6}$")
+    vin: str = Field(pattern=r"^SYN\d{14}$")
+    fleet_id: str = Field(pattern=r"^F\d{3}$")
     oem: str
     model: str
-    fuel_type: Literal['EV', 'ICE']
+    fuel_type: Literal["EV", "ICE"]
     manufacture_year: int
     home_region: str
     odometer_km: float
 
 
 class Telemetry(BaseModel):
-    model_config = ConfigDict(extra='forbid', allow_inf_nan=False)
+    model_config = ConfigDict(extra="forbid", allow_inf_nan=False)
     event_id: UUID
-    vehicle_id: str = Field(pattern=r'^V\d{6}$')
-    vin: str = Field(pattern=r'^SYN\d{14}$')
-    fleet_id: str = Field(pattern=r'^F\d{3}$')
+    vehicle_id: str = Field(pattern=r"^V\d{6}$")
+    vin: str = Field(pattern=r"^SYN\d{14}$")
+    fleet_id: str = Field(pattern=r"^F\d{3}$")
     timestamp: datetime
     seq: int = Field(ge=0)
     lat: float = Field(ge=-90, le=90)
@@ -42,30 +51,40 @@ class Telemetry(BaseModel):
     engine_temp_c: float = Field(ge=-40, le=160)
     dtc: list[str] = Field(max_length=16)
     event_type: Literal[
-        'NORMAL', 'IDLING', 'SPEEDING', 'HARSH_BRAKE', 'HARSH_ACCELERATION',
-        'ENGINE_FAULT', 'LOW_ENERGY', 'OFFLINE', 'DUPLICATE_EVENT',
-        'OUT_OF_ORDER_EVENT', 'MALFORMED_EVENT', 'NETWORK_RECOVERY_BURST',
+        "NORMAL",
+        "IDLING",
+        "SPEEDING",
+        "HARSH_BRAKE",
+        "HARSH_ACCELERATION",
+        "ENGINE_FAULT",
+        "LOW_ENERGY",
+        "OFFLINE",
+        "DUPLICATE_EVENT",
+        "OUT_OF_ORDER_EVENT",
+        "MALFORMED_EVENT",
+        "NETWORK_RECOVERY_BURST",
     ]
     source_oem: str = Field(min_length=1, max_length=50)
     schema_version: Literal[1]
 
-    @field_validator('timestamp')
+    @field_validator("timestamp")
     @classmethod
     def utc_timestamp(cls, value: datetime) -> datetime:
         if value.tzinfo is None:
-            raise ValueError('timestamp must include a timezone')
+            raise ValueError("timestamp must include a timezone")
         return value.astimezone(timezone.utc)
 
-    @field_validator('dtc')
+    @field_validator("dtc")
     @classmethod
     def valid_dtc(cls, values: list[str]) -> list[str]:
         import re
-        if any(not re.fullmatch(r'[PBCU][0-9A-F]{4}', code) for code in values):
-            raise ValueError('invalid diagnostic code')
+
+        if any(not re.fullmatch(r"[PBCU][0-9A-F]{4}", code) for code in values):
+            raise ValueError("invalid diagnostic code")
         return values
 
-    @model_validator(mode='after')
+    @model_validator(mode="after")
     def energy(self):
         if (self.fuel_pct is None) == (self.soc_pct is None):
-            raise ValueError('exactly one of fuel_pct and soc_pct must be present')
+            raise ValueError("exactly one of fuel_pct and soc_pct must be present")
         return self
