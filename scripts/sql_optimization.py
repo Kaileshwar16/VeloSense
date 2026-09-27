@@ -1,3 +1,4 @@
+# ruff: noqa: E501
 """Capture actual ClickHouse plans and read statistics; never invent plan output."""
 
 import json

@@ -1,3 +1,4 @@
+# ruff: noqa: E501
 """Measured, progressively increasing real Kafka load. Stop when the pipeline saturates."""
 
 import argparse
