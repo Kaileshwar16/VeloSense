@@ -1,0 +1,25 @@
+erDiagram
+    FLEET ||--o{ VEHICLE : contains
+    FLEET ||--o{ ALERT_RULE : configures
+    FLEET {
+        varchar fleet_id PK
+        text name
+    }
+    VEHICLE {
+        varchar vehicle_id PK
+        varchar vin UK
+        varchar fleet_id FK
+        text oem
+        text model
+        text fuel_type
+        integer manufacture_year
+        text home_region
+        double odometer_km
+    }
+    ALERT_RULE {
+        bigint id PK
+        varchar fleet_id FK
+        text type
+        double threshold
+        boolean enabled
+    }

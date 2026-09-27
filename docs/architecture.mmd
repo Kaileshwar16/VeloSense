@@ -1,0 +1,14 @@
+flowchart LR
+    Registry["100,000 synthetic vehicles\nCSV, seed 42"] -->|Python batches| Sim["Stateful simulator\nbounded producer"]
+    Sim -->|"Kafka protocol · key = vehicle_id"| Kafka["Redpanda\n6 partitions · 1 replica"]
+    Kafka -->|"Kafka protocol · manual commits"| Processor["Python processor\nvalidate · dedup · detect"]
+    Processor -->|"Redis protocol · transactional pipeline"| Redis["HOT · Redis\nlatest state · active alerts · dedup TTL"]
+    Processor -->|"HTTP JSONEachRow batches"| CH["WARM · ClickHouse\nReplacingMergeTree · FINAL views"]
+    Registry -->|"SQL COPY"| PG["PostgreSQL\nfleets · vehicle metadata"]
+    UI["React / Vite dashboard\n3-second polling"] -->|"HTTP · API key"| API["FastAPI"]
+    API -->|Redis protocol| Redis
+    API -->|Parameterized SQL| PG
+    API -->|"Trino HTTP · analytical SELECT"| QF["QueryFlux\nexternal open-source component"]
+    QF -->|"HTTP / Arrow"| CH
+    API -.->|"HTTP SQL · explicit direct mode"| CH
+    CH -.->|"Future only · export"| Cold["COLD · Parquet / S3\nnot implemented"]
