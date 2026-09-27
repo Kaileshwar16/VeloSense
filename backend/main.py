@@ -170,10 +170,11 @@ def create_app(settings: Settings | None = None, live=None, metadata=None, analy
     ):
         await known(vehicle_id)
         return await app.state.analytics.execute(
-            "SELECT concat(CAST(timestamp AS VARCHAR), 'Z') AS timestamp, "
+            "SELECT concat(CAST(t.timestamp AS VARCHAR), 'Z') AS timestamp, "
             "speed_kmh, lat, lon, fuel_pct, soc_pct, event_type "
-            f"FROM valeosense.telemetry_read WHERE vehicle_id = '{vehicle_id}' AND {where(days)} "
-            f"ORDER BY timestamp DESC LIMIT {limit}"
+            f"FROM valeosense.telemetry_read AS t WHERE vehicle_id = '{vehicle_id}' "
+            f"AND {where(days).replace('timestamp >=', 't.timestamp >=')} "
+            f"ORDER BY t.timestamp DESC LIMIT {limit}"
         )
 
     @app.get("/api/v1/alerts", dependencies=auth)
