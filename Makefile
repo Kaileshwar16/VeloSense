@@ -33,7 +33,7 @@ sql-evidence:
 queryflux:
 	bash scripts/run_queryflux.sh
 routed-api:
-	$(COMPOSE) run --rm --service-ports -e ANALYTICS_ROUTE=queryflux backend
+	ANALYTICS_ROUTE=queryflux $(COMPOSE) up -d --no-deps --force-recreate backend
 api:
 	$(PY) -m uvicorn backend.main:app --host 127.0.0.1 --port 8000
 processor:
