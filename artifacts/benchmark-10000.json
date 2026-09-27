@@ -1,0 +1,16 @@
+{
+  "target_per_sec": 10000,
+  "registered": 100000,
+  "active_vehicles": 10000,
+  "generated": 150000,
+  "emitted": 152595,
+  "published": 152595,
+  "errors": 0,
+  "error": null,
+  "backpressure": 0,
+  "duration_seconds": 15.00568094800019,
+  "generated_per_sec": 9996.214135153296,
+  "published_per_sec": 10169.148639691448,
+  "sink": "kafka",
+  "updated_at": 1790519884.1540427
+}
