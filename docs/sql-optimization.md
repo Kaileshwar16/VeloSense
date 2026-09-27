@@ -24,21 +24,21 @@ Expression ((Project names + (Before ORDER BY + (Projection + (WHERE + (Change c
           Indexes:
             MinMax
               Condition: true
-              Parts: 4/4
-              Granules: 201/201
+              Parts: 8/8
+              Granules: 474/474
             Partition
               Condition: true
-              Parts: 4/4
-              Granules: 201/201
+              Parts: 8/8
+              Granules: 474/474
             PrimaryKey
               Condition: true
-              Parts: 4/4
-              Granules: 201/201
-              Ranges: 4
+              Parts: 8/8
+              Granules: 474/474
+              Ranges: 8
 ```
 
-Median execution: 0.020883 seconds.
-Read rows in each run: [226112, 226112, 226112, 226112, 226112]
+Median execution: 0.023693 seconds.
+Read rows in each run: [515271, 515271, 515271, 515271, 515271]
 
 ## After
 
@@ -57,24 +57,24 @@ Expression ((Project names + (Before ORDER BY + (Projection + (WHERE + (Change c
           Indexes:
             MinMax
               Condition: true
-              Parts: 4/4
-              Granules: 201/201
+              Parts: 8/8
+              Granules: 474/474
             Partition
               Condition: true
-              Parts: 4/4
-              Granules: 201/201
+              Parts: 8/8
+              Granules: 474/474
             PrimaryKey
               Keys:
                 vehicle_id
               Condition: (vehicle_id in [\'V000001\', \'V000001\'])
-              Parts: 2/4
-              Granules: 2/201
+              Parts: 4/8
+              Granules: 4/474
               Search Algorithm: binary search
-              Ranges: 2
+              Ranges: 4
 ```
 
-Median execution: 0.002700 seconds.
-Read rows in each run: [2048, 2048, 2048, 2048, 2048]
+Median execution: 0.002402 seconds.
+Read rows in each run: [4096, 4096, 4096, 4096, 4096]
 
 This demonstrates index pruning, not a universal speedup. Small datasets, caches, concurrent ingestion,
 and FINAL processing affect elapsed time. See raw statistics in artifacts/sql-optimization.json.

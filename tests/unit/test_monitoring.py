@@ -27,7 +27,15 @@ def test_fresh_counters_units_and_unknown_lag():
     assert "valeosense_queryflux_verified 0\n" in text
 
 
-@pytest.mark.parametrize("report", [None, {}, {"updated_at": 95, "consumed": 42}])
+@pytest.mark.parametrize(
+    "report",
+    [
+        None,
+        {},
+        {"updated_at": 95, "consumed": 42},
+        {"updated_at": 100, "running": False, "consumed": 42},
+    ],
+)
 def test_missing_and_stale_reports_do_not_become_zero_lag_or_live_counters(report):
     text = render_metrics({"processor": report}, {}, now=100)
     assert "valeosense_processor_reporting 0\n" in text

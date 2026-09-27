@@ -30,7 +30,7 @@ flowchart LR
   FastAPI -.->|explicit direct mode| ClickHouse
 ```
 
-[Detailed architecture](docs/architecture.md) · [ER diagram](docs/er-diagram.mmd) · [ADRs](docs/adr) · [Solution document](docs/solution-document.md)
+[Submission checklist](docs/submission-checklist.md) · [Detailed architecture](docs/architecture.md) · [ER diagram](docs/er-diagram.mmd) · [ADRs](docs/adr) · [Solution document](docs/solution-document.md)
 
 ## Why not one database?
 
@@ -53,6 +53,10 @@ make simulator             # 100K registered, 1K actively reporting, ~1K generat
 Open **http://localhost:3000**. Enter the `API_KEY` from your local `.env`; do not expose it in recordings. The backend is at http://localhost:8000 and interactive API schema at http://localhost:8000/docs. Published core service ports are bound to loopback. API key authentication protects `/api/v1/*`.
 
 For a containerized continuous simulator, use `make demo` instead of `make up` + `make simulator`. It starts safe demo load, not a benchmark. Do not run both simulators simultaneously when measuring performance.
+
+For the same continuous demo with QueryFlux-backed analytics, use
+`make demo-queryflux` after setup. Stop its simulator before running a benchmark:
+`docker compose --env-file .env -f infra/docker-compose.yml stop simulator`.
 
 Optional monitoring: after starting the application, run `make monitoring` and open
 [Grafana at localhost:3001](http://localhost:3001/d/valeosense-overview). Log in as
@@ -95,7 +99,7 @@ The committed CSV contains synthetic IDs, 17-character synthetic VINs, fleet, OE
   --sink file --output artifacts/telemetry.jsonl
 ```
 
-`--duration 0` runs until SIGINT/SIGTERM. `--mode load` disables explicit showcase assignments. `--probabilities path.json` accepts all twelve scenario weights, summing to one. The distinction between registered and active vehicles is intentional: at 1K/sec, sampling all 100K round-robin would produce a 100-second per-vehicle gap, which cannot demonstrate a 20-second idle window.
+`--duration 0` runs until SIGINT/SIGTERM. `SEED` sets the simulator default and `--seed` overrides it. Failure reports include the original error type, delivery errors, undelivered records and backpressure even when shutdown flushing also fails. `--mode load` disables explicit showcase assignments. `--probabilities path.json` accepts all twelve scenario weights, summing to one. The distinction between registered and active vehicles is intentional: at 1K/sec, sampling all 100K round-robin would produce a 100-second per-vehicle gap, which cannot demonstrate a 20-second idle window.
 
 ## QueryFlux integration
 
@@ -107,7 +111,7 @@ No automatic silent fallback: a configured QueryFlux outage returns 503. Debug r
 
 ## Run the demo
 
-Allow 30 seconds of streaming before showing idling. The first eight vehicles showcase idling, speeding, braking, faults, duplicates, out-of-order publication, network recovery, and acceleration. The remaining active vehicles follow configurable probabilities. The dashboard polls every three seconds and displays stale/offline readings honestly. [Five-minute script](docs/demo-script.md).
+Allow 30 seconds of streaming before showing idling. Detector thresholds are configurable through `IDLING_THRESHOLD_SECONDS`, `SPEEDING_THRESHOLD_KMH`, `HARSH_BRAKE_THRESHOLD_MPS2` (negative), and `HARSH_ACCEL_THRESHOLD_MPS2` (positive). The first eight vehicles showcase idling, speeding, braking, faults, duplicates, out-of-order publication, network recovery, and acceleration. The remaining active vehicles follow configurable probabilities. The dashboard polls every three seconds and displays stale/offline readings honestly. [Five-minute script](docs/demo-script.md).
 
 ## API endpoints
 
@@ -155,7 +159,7 @@ make benchmark
 make sql-evidence
 ```
 
-The first measured run sustained a 1K target: 999.73 generated readings/sec. The 10K target generated 9,996.21/sec but took 36.09 seconds to drain; it was **not sustained** by the processor. Higher targets were not attempted. These short measurements are not production capacity guarantees. Full counts, startup/drain-inclusive rates, and process CPU/memory are in [benchmark.md](docs/benchmark.md).
+The latest measured run sustained a 1K target: 999.87 generated readings/sec. The 10K target generated 9,997.86/sec but took 24.53 seconds to drain; it was **not sustained** by the processor. Higher targets were not attempted. These short measurements are not production capacity guarantees. Full counts, startup/drain-inclusive rates, and process CPU/memory are in [benchmark.md](docs/benchmark.md).
 
 ## Failure demo
 

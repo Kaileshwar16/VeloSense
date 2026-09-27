@@ -1,632 +1,872 @@
 {
   "before": {
     "query": "SELECT timestamp, speed_kmh FROM valeosense.telemetry_read WHERE substring(vehicle_id, 2) = '000001' ORDER BY timestamp DESC LIMIT 100",
-    "plan": "Expression ((Project names + (Before ORDER BY + (Projection + (WHERE + (Change column names to column identifiers + (Convert VIEW subquery result to VIEW table structure + (Materialize constants after VIEW subquery + (Project names + (Projection + (Change column names to column identifiers + (Project names + (Projection + Change column names to column identifiers))))))))))) [lifted up part]))\n  Limit (preliminary LIMIT (without OFFSET))\n    Sorting (Sorting for ORDER BY)\n      Expression ((Before ORDER BY + (Projection + (WHERE + (Change column names to column identifiers + (Convert VIEW subquery result to VIEW table structure + (Materialize constants after VIEW subquery + (Project names + (Projection + (Change column names to column identifiers + (Project names + (Projection + Change column names to column identifiers))))))))))))\n        Filter (((WHERE + (Change column names to column identifiers + (Convert VIEW subquery result to VIEW table structure + (Materialize constants after VIEW subquery + (Project names + (Projection + (Change column names to column identifiers + (Project names + (Projection + Change column names to column identifiers))))))))))[split])\n          ReadFromMergeTree (valeosense.telemetry)\n          Indexes:\n            MinMax\n              Condition: true\n              Parts: 4/4\n              Granules: 201/201\n            Partition\n              Condition: true\n              Parts: 4/4\n              Granules: 201/201\n            PrimaryKey\n              Condition: true\n              Parts: 4/4\n              Granules: 201/201\n              Ranges: 4\n",
+    "plan": "Expression ((Project names + (Before ORDER BY + (Projection + (WHERE + (Change column names to column identifiers + (Convert VIEW subquery result to VIEW table structure + (Materialize constants after VIEW subquery + (Project names + (Projection + (Change column names to column identifiers + (Project names + (Projection + Change column names to column identifiers))))))))))) [lifted up part]))\n  Limit (preliminary LIMIT (without OFFSET))\n    Sorting (Sorting for ORDER BY)\n      Expression ((Before ORDER BY + (Projection + (WHERE + (Change column names to column identifiers + (Convert VIEW subquery result to VIEW table structure + (Materialize constants after VIEW subquery + (Project names + (Projection + (Change column names to column identifiers + (Project names + (Projection + Change column names to column identifiers))))))))))))\n        Filter (((WHERE + (Change column names to column identifiers + (Convert VIEW subquery result to VIEW table structure + (Materialize constants after VIEW subquery + (Project names + (Projection + (Change column names to column identifiers + (Project names + (Projection + Change column names to column identifiers))))))))))[split])\n          ReadFromMergeTree (valeosense.telemetry)\n          Indexes:\n            MinMax\n              Condition: true\n              Parts: 8/8\n              Granules: 474/474\n            Partition\n              Condition: true\n              Parts: 8/8\n              Granules: 474/474\n            PrimaryKey\n              Condition: true\n              Parts: 8/8\n              Granules: 474/474\n              Ranges: 8\n",
     "statistics": [
       {
-        "elapsed": 0.068295896,
-        "rows_read": 226112,
-        "bytes_read": 9722816
+        "elapsed": 0.02449076,
+        "rows_read": 515271,
+        "bytes_read": 22156653
       },
       {
-        "elapsed": 0.013769158,
-        "rows_read": 226112,
-        "bytes_read": 9722816
+        "elapsed": 0.02369319,
+        "rows_read": 515271,
+        "bytes_read": 22156653
       },
       {
-        "elapsed": 0.022974354,
-        "rows_read": 226112,
-        "bytes_read": 9722816
+        "elapsed": 0.023642088,
+        "rows_read": 515271,
+        "bytes_read": 22156653
       },
       {
-        "elapsed": 0.020882938,
-        "rows_read": 226112,
-        "bytes_read": 9722816
+        "elapsed": 0.024786731,
+        "rows_read": 515271,
+        "bytes_read": 22156653
       },
       {
-        "elapsed": 0.017450071,
-        "rows_read": 226112,
-        "bytes_read": 9722816
+        "elapsed": 0.021556984,
+        "rows_read": 515271,
+        "bytes_read": 22156653
       }
     ],
-    "rows": 70,
+    "rows": 100,
     "data": [
       {
-        "timestamp": "2026-09-27 14:38:03.145",
+        "timestamp": "2026-09-27 16:04:42.990",
         "speed_kmh": 56.93
       },
       {
-        "timestamp": "2026-09-27 14:38:02.145",
+        "timestamp": "2026-09-27 16:04:41.990",
         "speed_kmh": 58.17
       },
       {
-        "timestamp": "2026-09-27 14:38:01.145",
+        "timestamp": "2026-09-27 16:04:40.990",
         "speed_kmh": 56.06
       },
       {
-        "timestamp": "2026-09-27 14:38:00.145",
+        "timestamp": "2026-09-27 16:04:39.990",
         "speed_kmh": 58.09
       },
       {
-        "timestamp": "2026-09-27 14:37:59.145",
+        "timestamp": "2026-09-27 16:04:38.990",
         "speed_kmh": 60.52
       },
       {
-        "timestamp": "2026-09-27 14:37:58.145",
+        "timestamp": "2026-09-27 16:04:37.990",
         "speed_kmh": 59.88
       },
       {
-        "timestamp": "2026-09-27 14:37:57.145",
+        "timestamp": "2026-09-27 16:04:36.990",
         "speed_kmh": 59.9
       },
       {
-        "timestamp": "2026-09-27 14:37:56.145",
+        "timestamp": "2026-09-27 16:04:35.990",
         "speed_kmh": 57.66
       },
       {
-        "timestamp": "2026-09-27 14:37:55.145",
+        "timestamp": "2026-09-27 16:04:34.990",
         "speed_kmh": 58.12
       },
       {
-        "timestamp": "2026-09-27 14:37:54.145",
+        "timestamp": "2026-09-27 16:04:33.990",
         "speed_kmh": 59.88
       },
       {
-        "timestamp": "2026-09-27 14:37:53.145",
+        "timestamp": "2026-09-27 16:04:32.990",
         "speed_kmh": 57.64
       },
       {
-        "timestamp": "2026-09-27 14:37:52.145",
+        "timestamp": "2026-09-27 16:04:31.990",
         "speed_kmh": 58.06
       },
       {
-        "timestamp": "2026-09-27 14:37:51.145",
+        "timestamp": "2026-09-27 16:04:30.990",
         "speed_kmh": 59.36
       },
       {
-        "timestamp": "2026-09-27 14:37:50.145",
+        "timestamp": "2026-09-27 16:04:29.990",
         "speed_kmh": 61.71
       },
       {
-        "timestamp": "2026-09-27 14:37:49.145",
+        "timestamp": "2026-09-27 16:04:28.990",
         "speed_kmh": 62
       },
       {
-        "timestamp": "2026-09-27 14:37:40.043",
+        "timestamp": "2026-09-27 16:04:23.462",
         "speed_kmh": 51.59
       },
       {
-        "timestamp": "2026-09-27 14:37:39.043",
+        "timestamp": "2026-09-27 16:04:22.462",
         "speed_kmh": 53.28
       },
       {
-        "timestamp": "2026-09-27 14:37:38.043",
+        "timestamp": "2026-09-27 16:04:21.462",
         "speed_kmh": 54.24
       },
       {
-        "timestamp": "2026-09-27 14:37:37.043",
+        "timestamp": "2026-09-27 16:04:20.462",
         "speed_kmh": 52.96
       },
       {
-        "timestamp": "2026-09-27 14:37:36.043",
+        "timestamp": "2026-09-27 16:04:19.462",
         "speed_kmh": 54.83
       },
       {
-        "timestamp": "2026-09-27 14:37:35.043",
+        "timestamp": "2026-09-27 16:04:18.462",
         "speed_kmh": 57.27
       },
       {
-        "timestamp": "2026-09-27 14:37:34.043",
+        "timestamp": "2026-09-27 16:04:17.462",
         "speed_kmh": 57.61
       },
       {
-        "timestamp": "2026-09-27 14:37:33.043",
+        "timestamp": "2026-09-27 16:04:16.462",
         "speed_kmh": 58.87
       },
       {
-        "timestamp": "2026-09-27 14:37:32.043",
+        "timestamp": "2026-09-27 16:04:15.462",
         "speed_kmh": 59.99
       },
       {
-        "timestamp": "2026-09-27 14:37:31.043",
+        "timestamp": "2026-09-27 16:04:14.462",
         "speed_kmh": 61.56
       },
       {
-        "timestamp": "2026-09-27 14:37:30.043",
+        "timestamp": "2026-09-27 16:04:13.462",
         "speed_kmh": 63.51
       },
       {
-        "timestamp": "2026-09-27 14:37:29.043",
+        "timestamp": "2026-09-27 16:04:12.462",
         "speed_kmh": 62.45
       },
       {
-        "timestamp": "2026-09-27 14:37:28.043",
+        "timestamp": "2026-09-27 16:04:11.462",
         "speed_kmh": 62.11
       },
       {
-        "timestamp": "2026-09-27 14:37:27.043",
+        "timestamp": "2026-09-27 16:04:10.462",
         "speed_kmh": 62.24
       },
       {
-        "timestamp": "2026-09-27 14:37:26.043",
+        "timestamp": "2026-09-27 16:04:09.462",
         "speed_kmh": 62
       },
       {
-        "timestamp": "2026-09-27 14:28:30.957",
+        "timestamp": "2026-09-27 16:01:42.088",
+        "speed_kmh": 51.59
+      },
+      {
+        "timestamp": "2026-09-27 16:01:41.088",
+        "speed_kmh": 53.28
+      },
+      {
+        "timestamp": "2026-09-27 16:01:40.088",
+        "speed_kmh": 54.24
+      },
+      {
+        "timestamp": "2026-09-27 16:01:39.088",
+        "speed_kmh": 52.96
+      },
+      {
+        "timestamp": "2026-09-27 16:01:38.088",
+        "speed_kmh": 54.83
+      },
+      {
+        "timestamp": "2026-09-27 16:01:37.088",
+        "speed_kmh": 57.27
+      },
+      {
+        "timestamp": "2026-09-27 16:01:36.088",
+        "speed_kmh": 57.61
+      },
+      {
+        "timestamp": "2026-09-27 16:01:35.088",
+        "speed_kmh": 58.87
+      },
+      {
+        "timestamp": "2026-09-27 16:01:34.088",
+        "speed_kmh": 59.99
+      },
+      {
+        "timestamp": "2026-09-27 16:01:33.088",
+        "speed_kmh": 61.56
+      },
+      {
+        "timestamp": "2026-09-27 16:01:32.088",
+        "speed_kmh": 63.51
+      },
+      {
+        "timestamp": "2026-09-27 16:01:31.088",
+        "speed_kmh": 62.45
+      },
+      {
+        "timestamp": "2026-09-27 16:01:30.088",
+        "speed_kmh": 62.11
+      },
+      {
+        "timestamp": "2026-09-27 16:01:29.088",
+        "speed_kmh": 62.24
+      },
+      {
+        "timestamp": "2026-09-27 16:01:28.088",
+        "speed_kmh": 62
+      },
+      {
+        "timestamp": "2026-09-27 15:59:54.744",
         "speed_kmh": 0
       },
       {
-        "timestamp": "2026-09-27 14:28:29.957",
+        "timestamp": "2026-09-27 15:59:53.744",
         "speed_kmh": 0
       },
       {
-        "timestamp": "2026-09-27 14:28:28.957",
+        "timestamp": "2026-09-27 15:59:52.744",
         "speed_kmh": 0
       },
       {
-        "timestamp": "2026-09-27 14:28:27.957",
+        "timestamp": "2026-09-27 15:59:51.744",
         "speed_kmh": 0
       },
       {
-        "timestamp": "2026-09-27 14:28:26.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:25.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:24.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:23.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:22.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:21.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:20.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:19.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:18.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:17.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:16.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:15.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:14.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:13.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:12.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:11.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:10.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:09.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:08.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:07.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:06.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:05.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:04.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:03.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:02.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:01.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:00.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:27:59.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:27:58.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:27:57.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:27:56.957",
+        "timestamp": "2026-09-27 15:59:50.744",
         "speed_kmh": 0.58
       },
       {
-        "timestamp": "2026-09-27 14:27:55.957",
+        "timestamp": "2026-09-27 15:59:49.744",
         "speed_kmh": 10.58
       },
       {
-        "timestamp": "2026-09-27 14:27:54.957",
+        "timestamp": "2026-09-27 15:59:48.744",
         "speed_kmh": 20.58
       },
       {
-        "timestamp": "2026-09-27 14:27:53.957",
+        "timestamp": "2026-09-27 15:59:47.744",
         "speed_kmh": 30.58
       },
       {
-        "timestamp": "2026-09-27 14:27:52.957",
+        "timestamp": "2026-09-27 15:59:46.744",
         "speed_kmh": 40.58
       },
       {
-        "timestamp": "2026-09-27 14:27:51.957",
+        "timestamp": "2026-09-27 15:59:45.744",
         "speed_kmh": 50.58
+      },
+      {
+        "timestamp": "2026-09-27 14:46:45.301",
+        "speed_kmh": 6.06
+      },
+      {
+        "timestamp": "2026-09-27 14:46:44.301",
+        "speed_kmh": 7.81
+      },
+      {
+        "timestamp": "2026-09-27 14:46:43.301",
+        "speed_kmh": 7.8
+      },
+      {
+        "timestamp": "2026-09-27 14:46:42.301",
+        "speed_kmh": 5.06
+      },
+      {
+        "timestamp": "2026-09-27 14:46:41.301",
+        "speed_kmh": 2.41
+      },
+      {
+        "timestamp": "2026-09-27 14:46:40.301",
+        "speed_kmh": 0
+      },
+      {
+        "timestamp": "2026-09-27 14:46:39.301",
+        "speed_kmh": 1.16
+      },
+      {
+        "timestamp": "2026-09-27 14:46:38.301",
+        "speed_kmh": 0
+      },
+      {
+        "timestamp": "2026-09-27 14:46:37.301",
+        "speed_kmh": 0
+      },
+      {
+        "timestamp": "2026-09-27 14:46:36.301",
+        "speed_kmh": 0
+      },
+      {
+        "timestamp": "2026-09-27 14:46:35.301",
+        "speed_kmh": 0
+      },
+      {
+        "timestamp": "2026-09-27 14:46:34.301",
+        "speed_kmh": 0
+      },
+      {
+        "timestamp": "2026-09-27 14:46:33.301",
+        "speed_kmh": 0.5
+      },
+      {
+        "timestamp": "2026-09-27 14:46:32.301",
+        "speed_kmh": 2.92
+      },
+      {
+        "timestamp": "2026-09-27 14:46:31.301",
+        "speed_kmh": 0
+      },
+      {
+        "timestamp": "2026-09-27 14:46:30.301",
+        "speed_kmh": 0.37
+      },
+      {
+        "timestamp": "2026-09-27 14:46:29.301",
+        "speed_kmh": 0.46
+      },
+      {
+        "timestamp": "2026-09-27 14:46:28.301",
+        "speed_kmh": 2.37
+      },
+      {
+        "timestamp": "2026-09-27 14:46:27.301",
+        "speed_kmh": 1.71
+      },
+      {
+        "timestamp": "2026-09-27 14:46:26.301",
+        "speed_kmh": 0.78
+      },
+      {
+        "timestamp": "2026-09-27 14:46:25.301",
+        "speed_kmh": 0
+      },
+      {
+        "timestamp": "2026-09-27 14:46:24.301",
+        "speed_kmh": 0
+      },
+      {
+        "timestamp": "2026-09-27 14:46:23.301",
+        "speed_kmh": 0.44
+      },
+      {
+        "timestamp": "2026-09-27 14:46:22.301",
+        "speed_kmh": 3.24
+      },
+      {
+        "timestamp": "2026-09-27 14:46:21.301",
+        "speed_kmh": 5.51
+      },
+      {
+        "timestamp": "2026-09-27 14:46:20.301",
+        "speed_kmh": 7.82
+      },
+      {
+        "timestamp": "2026-09-27 14:46:19.301",
+        "speed_kmh": 5.46
+      },
+      {
+        "timestamp": "2026-09-27 14:46:18.301",
+        "speed_kmh": 4.54
+      },
+      {
+        "timestamp": "2026-09-27 14:46:17.301",
+        "speed_kmh": 4.7200003
+      },
+      {
+        "timestamp": "2026-09-27 14:46:16.301",
+        "speed_kmh": 2.15
+      },
+      {
+        "timestamp": "2026-09-27 14:46:15.301",
+        "speed_kmh": 0.15
+      },
+      {
+        "timestamp": "2026-09-27 14:46:14.301",
+        "speed_kmh": 1.98
+      },
+      {
+        "timestamp": "2026-09-27 14:46:13.301",
+        "speed_kmh": 0
+      },
+      {
+        "timestamp": "2026-09-27 14:46:12.301",
+        "speed_kmh": 1.02
+      },
+      {
+        "timestamp": "2026-09-27 14:46:11.301",
+        "speed_kmh": 0.2
+      },
+      {
+        "timestamp": "2026-09-27 14:46:10.301",
+        "speed_kmh": 2.8600001
+      },
+      {
+        "timestamp": "2026-09-27 14:46:09.301",
+        "speed_kmh": 0
+      },
+      {
+        "timestamp": "2026-09-27 14:46:08.301",
+        "speed_kmh": 0
+      },
+      {
+        "timestamp": "2026-09-27 14:46:07.301",
+        "speed_kmh": 1.61
+      },
+      {
+        "timestamp": "2026-09-27 14:46:06.301",
+        "speed_kmh": 0
+      },
+      {
+        "timestamp": "2026-09-27 14:46:05.301",
+        "speed_kmh": 0.64
+      },
+      {
+        "timestamp": "2026-09-27 14:46:04.301",
+        "speed_kmh": 2.3899999
+      },
+      {
+        "timestamp": "2026-09-27 14:46:03.301",
+        "speed_kmh": 1.31
+      },
+      {
+        "timestamp": "2026-09-27 14:46:02.301",
+        "speed_kmh": 0
+      },
+      {
+        "timestamp": "2026-09-27 14:46:01.301",
+        "speed_kmh": 0
       }
     ],
-    "median_elapsed_seconds": 0.020882938
+    "median_elapsed_seconds": 0.02369319
   },
   "after": {
     "query": "SELECT timestamp, speed_kmh FROM valeosense.telemetry_read WHERE vehicle_id = 'V000001' ORDER BY timestamp DESC LIMIT 100",
-    "plan": "Expression ((Project names + (Before ORDER BY + (Projection + (WHERE + (Change column names to column identifiers + (Convert VIEW subquery result to VIEW table structure + (Materialize constants after VIEW subquery + (Project names + (Projection + (Change column names to column identifiers + (Project names + (Projection + Change column names to column identifiers))))))))))) [lifted up part]))\n  Limit (preliminary LIMIT (without OFFSET))\n    Sorting (Sorting for ORDER BY)\n      Expression ((Before ORDER BY + (Projection + (WHERE + (Change column names to column identifiers + (Convert VIEW subquery result to VIEW table structure + (Materialize constants after VIEW subquery + (Project names + (Projection + (Change column names to column identifiers + (Project names + (Projection + Change column names to column identifiers))))))))))))\n        Filter (((WHERE + (Change column names to column identifiers + (Convert VIEW subquery result to VIEW table structure + (Materialize constants after VIEW subquery + (Project names + (Projection + (Change column names to column identifiers + (Project names + (Projection + Change column names to column identifiers))))))))))[split])\n          ReadFromMergeTree (valeosense.telemetry)\n          Indexes:\n            MinMax\n              Condition: true\n              Parts: 4/4\n              Granules: 201/201\n            Partition\n              Condition: true\n              Parts: 4/4\n              Granules: 201/201\n            PrimaryKey\n              Keys:\n                vehicle_id\n              Condition: (vehicle_id in [\\'V000001\\', \\'V000001\\'])\n              Parts: 2/4\n              Granules: 2/201\n              Search Algorithm: binary search\n              Ranges: 2\n",
+    "plan": "Expression ((Project names + (Before ORDER BY + (Projection + (WHERE + (Change column names to column identifiers + (Convert VIEW subquery result to VIEW table structure + (Materialize constants after VIEW subquery + (Project names + (Projection + (Change column names to column identifiers + (Project names + (Projection + Change column names to column identifiers))))))))))) [lifted up part]))\n  Limit (preliminary LIMIT (without OFFSET))\n    Sorting (Sorting for ORDER BY)\n      Expression ((Before ORDER BY + (Projection + (WHERE + (Change column names to column identifiers + (Convert VIEW subquery result to VIEW table structure + (Materialize constants after VIEW subquery + (Project names + (Projection + (Change column names to column identifiers + (Project names + (Projection + Change column names to column identifiers))))))))))))\n        Filter (((WHERE + (Change column names to column identifiers + (Convert VIEW subquery result to VIEW table structure + (Materialize constants after VIEW subquery + (Project names + (Projection + (Change column names to column identifiers + (Project names + (Projection + Change column names to column identifiers))))))))))[split])\n          ReadFromMergeTree (valeosense.telemetry)\n          Indexes:\n            MinMax\n              Condition: true\n              Parts: 8/8\n              Granules: 474/474\n            Partition\n              Condition: true\n              Parts: 8/8\n              Granules: 474/474\n            PrimaryKey\n              Keys:\n                vehicle_id\n              Condition: (vehicle_id in [\\'V000001\\', \\'V000001\\'])\n              Parts: 4/8\n              Granules: 4/474\n              Search Algorithm: binary search\n              Ranges: 4\n",
     "statistics": [
       {
-        "elapsed": 0.004502122,
-        "rows_read": 2048,
-        "bytes_read": 88064
+        "elapsed": 0.002376558,
+        "rows_read": 4096,
+        "bytes_read": 176128
       },
       {
-        "elapsed": 0.002699511,
-        "rows_read": 2048,
-        "bytes_read": 88064
+        "elapsed": 0.002401683,
+        "rows_read": 4096,
+        "bytes_read": 176128
       },
       {
-        "elapsed": 0.003091894,
-        "rows_read": 2048,
-        "bytes_read": 88064
+        "elapsed": 0.00226998,
+        "rows_read": 4096,
+        "bytes_read": 176128
       },
       {
-        "elapsed": 0.002641081,
-        "rows_read": 2048,
-        "bytes_read": 88064
+        "elapsed": 0.002811088,
+        "rows_read": 4096,
+        "bytes_read": 176128
       },
       {
-        "elapsed": 0.002605608,
-        "rows_read": 2048,
-        "bytes_read": 88064
+        "elapsed": 0.002507265,
+        "rows_read": 4096,
+        "bytes_read": 176128
       }
     ],
-    "rows": 70,
+    "rows": 100,
     "data": [
       {
-        "timestamp": "2026-09-27 14:38:03.145",
+        "timestamp": "2026-09-27 16:04:42.990",
         "speed_kmh": 56.93
       },
       {
-        "timestamp": "2026-09-27 14:38:02.145",
+        "timestamp": "2026-09-27 16:04:41.990",
         "speed_kmh": 58.17
       },
       {
-        "timestamp": "2026-09-27 14:38:01.145",
+        "timestamp": "2026-09-27 16:04:40.990",
         "speed_kmh": 56.06
       },
       {
-        "timestamp": "2026-09-27 14:38:00.145",
+        "timestamp": "2026-09-27 16:04:39.990",
         "speed_kmh": 58.09
       },
       {
-        "timestamp": "2026-09-27 14:37:59.145",
+        "timestamp": "2026-09-27 16:04:38.990",
         "speed_kmh": 60.52
       },
       {
-        "timestamp": "2026-09-27 14:37:58.145",
+        "timestamp": "2026-09-27 16:04:37.990",
         "speed_kmh": 59.88
       },
       {
-        "timestamp": "2026-09-27 14:37:57.145",
+        "timestamp": "2026-09-27 16:04:36.990",
         "speed_kmh": 59.9
       },
       {
-        "timestamp": "2026-09-27 14:37:56.145",
+        "timestamp": "2026-09-27 16:04:35.990",
         "speed_kmh": 57.66
       },
       {
-        "timestamp": "2026-09-27 14:37:55.145",
+        "timestamp": "2026-09-27 16:04:34.990",
         "speed_kmh": 58.12
       },
       {
-        "timestamp": "2026-09-27 14:37:54.145",
+        "timestamp": "2026-09-27 16:04:33.990",
         "speed_kmh": 59.88
       },
       {
-        "timestamp": "2026-09-27 14:37:53.145",
+        "timestamp": "2026-09-27 16:04:32.990",
         "speed_kmh": 57.64
       },
       {
-        "timestamp": "2026-09-27 14:37:52.145",
+        "timestamp": "2026-09-27 16:04:31.990",
         "speed_kmh": 58.06
       },
       {
-        "timestamp": "2026-09-27 14:37:51.145",
+        "timestamp": "2026-09-27 16:04:30.990",
         "speed_kmh": 59.36
       },
       {
-        "timestamp": "2026-09-27 14:37:50.145",
+        "timestamp": "2026-09-27 16:04:29.990",
         "speed_kmh": 61.71
       },
       {
-        "timestamp": "2026-09-27 14:37:49.145",
+        "timestamp": "2026-09-27 16:04:28.990",
         "speed_kmh": 62
       },
       {
-        "timestamp": "2026-09-27 14:37:40.043",
+        "timestamp": "2026-09-27 16:04:23.462",
         "speed_kmh": 51.59
       },
       {
-        "timestamp": "2026-09-27 14:37:39.043",
+        "timestamp": "2026-09-27 16:04:22.462",
         "speed_kmh": 53.28
       },
       {
-        "timestamp": "2026-09-27 14:37:38.043",
+        "timestamp": "2026-09-27 16:04:21.462",
         "speed_kmh": 54.24
       },
       {
-        "timestamp": "2026-09-27 14:37:37.043",
+        "timestamp": "2026-09-27 16:04:20.462",
         "speed_kmh": 52.96
       },
       {
-        "timestamp": "2026-09-27 14:37:36.043",
+        "timestamp": "2026-09-27 16:04:19.462",
         "speed_kmh": 54.83
       },
       {
-        "timestamp": "2026-09-27 14:37:35.043",
+        "timestamp": "2026-09-27 16:04:18.462",
         "speed_kmh": 57.27
       },
       {
-        "timestamp": "2026-09-27 14:37:34.043",
+        "timestamp": "2026-09-27 16:04:17.462",
         "speed_kmh": 57.61
       },
       {
-        "timestamp": "2026-09-27 14:37:33.043",
+        "timestamp": "2026-09-27 16:04:16.462",
         "speed_kmh": 58.87
       },
       {
-        "timestamp": "2026-09-27 14:37:32.043",
+        "timestamp": "2026-09-27 16:04:15.462",
         "speed_kmh": 59.99
       },
       {
-        "timestamp": "2026-09-27 14:37:31.043",
+        "timestamp": "2026-09-27 16:04:14.462",
         "speed_kmh": 61.56
       },
       {
-        "timestamp": "2026-09-27 14:37:30.043",
+        "timestamp": "2026-09-27 16:04:13.462",
         "speed_kmh": 63.51
       },
       {
-        "timestamp": "2026-09-27 14:37:29.043",
+        "timestamp": "2026-09-27 16:04:12.462",
         "speed_kmh": 62.45
       },
       {
-        "timestamp": "2026-09-27 14:37:28.043",
+        "timestamp": "2026-09-27 16:04:11.462",
         "speed_kmh": 62.11
       },
       {
-        "timestamp": "2026-09-27 14:37:27.043",
+        "timestamp": "2026-09-27 16:04:10.462",
         "speed_kmh": 62.24
       },
       {
-        "timestamp": "2026-09-27 14:37:26.043",
+        "timestamp": "2026-09-27 16:04:09.462",
         "speed_kmh": 62
       },
       {
-        "timestamp": "2026-09-27 14:28:30.957",
+        "timestamp": "2026-09-27 16:01:42.088",
+        "speed_kmh": 51.59
+      },
+      {
+        "timestamp": "2026-09-27 16:01:41.088",
+        "speed_kmh": 53.28
+      },
+      {
+        "timestamp": "2026-09-27 16:01:40.088",
+        "speed_kmh": 54.24
+      },
+      {
+        "timestamp": "2026-09-27 16:01:39.088",
+        "speed_kmh": 52.96
+      },
+      {
+        "timestamp": "2026-09-27 16:01:38.088",
+        "speed_kmh": 54.83
+      },
+      {
+        "timestamp": "2026-09-27 16:01:37.088",
+        "speed_kmh": 57.27
+      },
+      {
+        "timestamp": "2026-09-27 16:01:36.088",
+        "speed_kmh": 57.61
+      },
+      {
+        "timestamp": "2026-09-27 16:01:35.088",
+        "speed_kmh": 58.87
+      },
+      {
+        "timestamp": "2026-09-27 16:01:34.088",
+        "speed_kmh": 59.99
+      },
+      {
+        "timestamp": "2026-09-27 16:01:33.088",
+        "speed_kmh": 61.56
+      },
+      {
+        "timestamp": "2026-09-27 16:01:32.088",
+        "speed_kmh": 63.51
+      },
+      {
+        "timestamp": "2026-09-27 16:01:31.088",
+        "speed_kmh": 62.45
+      },
+      {
+        "timestamp": "2026-09-27 16:01:30.088",
+        "speed_kmh": 62.11
+      },
+      {
+        "timestamp": "2026-09-27 16:01:29.088",
+        "speed_kmh": 62.24
+      },
+      {
+        "timestamp": "2026-09-27 16:01:28.088",
+        "speed_kmh": 62
+      },
+      {
+        "timestamp": "2026-09-27 15:59:54.744",
         "speed_kmh": 0
       },
       {
-        "timestamp": "2026-09-27 14:28:29.957",
+        "timestamp": "2026-09-27 15:59:53.744",
         "speed_kmh": 0
       },
       {
-        "timestamp": "2026-09-27 14:28:28.957",
+        "timestamp": "2026-09-27 15:59:52.744",
         "speed_kmh": 0
       },
       {
-        "timestamp": "2026-09-27 14:28:27.957",
+        "timestamp": "2026-09-27 15:59:51.744",
         "speed_kmh": 0
       },
       {
-        "timestamp": "2026-09-27 14:28:26.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:25.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:24.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:23.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:22.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:21.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:20.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:19.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:18.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:17.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:16.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:15.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:14.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:13.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:12.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:11.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:10.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:09.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:08.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:07.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:06.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:05.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:04.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:03.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:02.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:01.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:28:00.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:27:59.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:27:58.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:27:57.957",
-        "speed_kmh": 0
-      },
-      {
-        "timestamp": "2026-09-27 14:27:56.957",
+        "timestamp": "2026-09-27 15:59:50.744",
         "speed_kmh": 0.58
       },
       {
-        "timestamp": "2026-09-27 14:27:55.957",
+        "timestamp": "2026-09-27 15:59:49.744",
         "speed_kmh": 10.58
       },
       {
-        "timestamp": "2026-09-27 14:27:54.957",
+        "timestamp": "2026-09-27 15:59:48.744",
         "speed_kmh": 20.58
       },
       {
-        "timestamp": "2026-09-27 14:27:53.957",
+        "timestamp": "2026-09-27 15:59:47.744",
         "speed_kmh": 30.58
       },
       {
-        "timestamp": "2026-09-27 14:27:52.957",
+        "timestamp": "2026-09-27 15:59:46.744",
         "speed_kmh": 40.58
       },
       {
-        "timestamp": "2026-09-27 14:27:51.957",
+        "timestamp": "2026-09-27 15:59:45.744",
         "speed_kmh": 50.58
+      },
+      {
+        "timestamp": "2026-09-27 14:46:45.301",
+        "speed_kmh": 6.06
+      },
+      {
+        "timestamp": "2026-09-27 14:46:44.301",
+        "speed_kmh": 7.81
+      },
+      {
+        "timestamp": "2026-09-27 14:46:43.301",
+        "speed_kmh": 7.8
+      },
+      {
+        "timestamp": "2026-09-27 14:46:42.301",
+        "speed_kmh": 5.06
+      },
+      {
+        "timestamp": "2026-09-27 14:46:41.301",
+        "speed_kmh": 2.41
+      },
+      {
+        "timestamp": "2026-09-27 14:46:40.301",
+        "speed_kmh": 0
+      },
+      {
+        "timestamp": "2026-09-27 14:46:39.301",
+        "speed_kmh": 1.16
+      },
+      {
+        "timestamp": "2026-09-27 14:46:38.301",
+        "speed_kmh": 0
+      },
+      {
+        "timestamp": "2026-09-27 14:46:37.301",
+        "speed_kmh": 0
+      },
+      {
+        "timestamp": "2026-09-27 14:46:36.301",
+        "speed_kmh": 0
+      },
+      {
+        "timestamp": "2026-09-27 14:46:35.301",
+        "speed_kmh": 0
+      },
+      {
+        "timestamp": "2026-09-27 14:46:34.301",
+        "speed_kmh": 0
+      },
+      {
+        "timestamp": "2026-09-27 14:46:33.301",
+        "speed_kmh": 0.5
+      },
+      {
+        "timestamp": "2026-09-27 14:46:32.301",
+        "speed_kmh": 2.92
+      },
+      {
+        "timestamp": "2026-09-27 14:46:31.301",
+        "speed_kmh": 0
+      },
+      {
+        "timestamp": "2026-09-27 14:46:30.301",
+        "speed_kmh": 0.37
+      },
+      {
+        "timestamp": "2026-09-27 14:46:29.301",
+        "speed_kmh": 0.46
+      },
+      {
+        "timestamp": "2026-09-27 14:46:28.301",
+        "speed_kmh": 2.37
+      },
+      {
+        "timestamp": "2026-09-27 14:46:27.301",
+        "speed_kmh": 1.71
+      },
+      {
+        "timestamp": "2026-09-27 14:46:26.301",
+        "speed_kmh": 0.78
+      },
+      {
+        "timestamp": "2026-09-27 14:46:25.301",
+        "speed_kmh": 0
+      },
+      {
+        "timestamp": "2026-09-27 14:46:24.301",
+        "speed_kmh": 0
+      },
+      {
+        "timestamp": "2026-09-27 14:46:23.301",
+        "speed_kmh": 0.44
+      },
+      {
+        "timestamp": "2026-09-27 14:46:22.301",
+        "speed_kmh": 3.24
+      },
+      {
+        "timestamp": "2026-09-27 14:46:21.301",
+        "speed_kmh": 5.51
+      },
+      {
+        "timestamp": "2026-09-27 14:46:20.301",
+        "speed_kmh": 7.82
+      },
+      {
+        "timestamp": "2026-09-27 14:46:19.301",
+        "speed_kmh": 5.46
+      },
+      {
+        "timestamp": "2026-09-27 14:46:18.301",
+        "speed_kmh": 4.54
+      },
+      {
+        "timestamp": "2026-09-27 14:46:17.301",
+        "speed_kmh": 4.7200003
+      },
+      {
+        "timestamp": "2026-09-27 14:46:16.301",
+        "speed_kmh": 2.15
+      },
+      {
+        "timestamp": "2026-09-27 14:46:15.301",
+        "speed_kmh": 0.15
+      },
+      {
+        "timestamp": "2026-09-27 14:46:14.301",
+        "speed_kmh": 1.98
+      },
+      {
+        "timestamp": "2026-09-27 14:46:13.301",
+        "speed_kmh": 0
+      },
+      {
+        "timestamp": "2026-09-27 14:46:12.301",
+        "speed_kmh": 1.02
+      },
+      {
+        "timestamp": "2026-09-27 14:46:11.301",
+        "speed_kmh": 0.2
+      },
+      {
+        "timestamp": "2026-09-27 14:46:10.301",
+        "speed_kmh": 2.8600001
+      },
+      {
+        "timestamp": "2026-09-27 14:46:09.301",
+        "speed_kmh": 0
+      },
+      {
+        "timestamp": "2026-09-27 14:46:08.301",
+        "speed_kmh": 0
+      },
+      {
+        "timestamp": "2026-09-27 14:46:07.301",
+        "speed_kmh": 1.61
+      },
+      {
+        "timestamp": "2026-09-27 14:46:06.301",
+        "speed_kmh": 0
+      },
+      {
+        "timestamp": "2026-09-27 14:46:05.301",
+        "speed_kmh": 0.64
+      },
+      {
+        "timestamp": "2026-09-27 14:46:04.301",
+        "speed_kmh": 2.3899999
+      },
+      {
+        "timestamp": "2026-09-27 14:46:03.301",
+        "speed_kmh": 1.31
+      },
+      {
+        "timestamp": "2026-09-27 14:46:02.301",
+        "speed_kmh": 0
+      },
+      {
+        "timestamp": "2026-09-27 14:46:01.301",
+        "speed_kmh": 0
       }
     ],
-    "median_elapsed_seconds": 0.002699511
+    "median_elapsed_seconds": 0.002401683
   }
 }

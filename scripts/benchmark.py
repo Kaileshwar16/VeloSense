@@ -25,13 +25,53 @@ def processor_metrics(client):
     return metrics
 
 
+def require_idle(live, baseline):
+    if baseline.get("consumer_lag") != 0:
+        raise RuntimeError("benchmark requires a known zero consumer lag")
+    raw = live.get("metrics:simulator")
+    other = json.loads(raw) if raw else {}
+    if other.get("running") is not False and time.time() - other.get("updated_at", 0) < 5:
+        raise RuntimeError("stop the existing simulator before benchmarking")
+
+
+def wait_for_idle(live, timeout=20):
+    deadline = time.monotonic() + timeout
+    while True:
+        baseline = processor_metrics(live)
+        if baseline.get("consumer_lag") == 0 or time.monotonic() >= deadline:
+            require_idle(live, baseline)
+            return baseline
+        time.sleep(1)
+
+
+def stable_stage(stage, baseline, final, rate, drain, stopped_for_memory):
+    return (
+        not stopped_for_memory
+        and not stage["errors"]
+        and not stage.get("error")
+        and stage["generated_per_sec"] >= rate * 0.9
+        and final["consumed"] - baseline["consumed"] == stage["published"]
+        and final.get("instance_id") == baseline.get("instance_id")
+        and drain < 5
+        and final["processor_errors"] == baseline["processor_errors"]
+    )
+
+
 def benchmark(rates: list[int], duration: int, output: Path):
     live = redis.Redis.from_url(Settings().redis_url, decode_responses=True)
     results = []
     for rate in rates:
-        baseline = processor_metrics(live)
-        if baseline.get("consumer_lag", 0) not in (0, None):
-            raise RuntimeError("benchmark requires a drained topic and no other producer")
+        try:
+            baseline = wait_for_idle(live)
+        except (RuntimeError, redis.RedisError) as exc:
+            results.append(
+                {
+                    "target_per_sec": rate,
+                    "error": str(exc) if isinstance(exc, RuntimeError) else type(exc).__name__,
+                    "stable": False,
+                }
+            )
+            break  # Preserve completed stages even if the next stage cannot start.
         report_path = Path(f"artifacts/benchmark-{rate}.json")
         started = time.monotonic()
         cpu_peak = memory_peak = 0
@@ -93,14 +133,7 @@ def benchmark(rates: list[int], duration: int, output: Path):
         elapsed = time.monotonic() - started
         consumed = final["consumed"] - baseline["consumed"]
         drain = time.monotonic() - published_end
-        stable = (
-            not stopped_for_memory
-            and not stage["errors"]
-            and stage["generated_per_sec"] >= rate * 0.9
-            and consumed >= stage["published"]
-            and drain < 5
-            and final["processor_errors"] == baseline["processor_errors"]
-        )
+        stable = stable_stage(stage, baseline, final, rate, drain, stopped_for_memory)
         result = {
             **stage,
             "consumed": consumed,
@@ -115,6 +148,7 @@ def benchmark(rates: list[int], duration: int, output: Path):
             "simulator_peak_rss_bytes": memory_peak,
             "simulator_peak_cpu_percent": cpu_peak,
             "stopped_for_memory": stopped_for_memory,
+            "processor_restarted": final.get("instance_id") != baseline.get("instance_id"),
             "stable": stable,
         }
         results.append(result)
@@ -122,13 +156,13 @@ def benchmark(rates: list[int], duration: int, output: Path):
         # Progressively protect the laptop and avoid calling an overloaded target sustained.
         if not stable:
             break
-        time.sleep(6)  # Allow the lag gauge to reflect committed offsets before next stage.
+        # The next stage waits for a measured zero lag, rather than a fixed pause.
     report = {
         "measured_at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "scope": "real generator -> Kafka -> processor -> Redis + ClickHouse",
         "host": {"logical_cpus": psutil.cpu_count(), "memory_bytes": psutil.virtual_memory().total},
         "stage_duration_requested_seconds": duration,
-        "stability_rule": ">=90% generation target, all published consumed, <5s drain, no errors",
+        "stability_rule": ">=90% generation target, exact published/consumed match, same processor, <5s drain, no errors",
         "results": results,
         "unattempted_targets": rates[len(results) :],
         "maximum_stable_generated_per_sec": max(

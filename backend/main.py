@@ -267,6 +267,8 @@ def create_app(settings: Settings | None = None, live=None, metadata=None, analy
                 "analytics_waiting": analytics.waiting,
                 "analytics_requests": analytics.requests,
                 "analytics_errors": analytics.errors,
+                "analytics_latency_ms_total": analytics.latency_ms_total,
+                "analytics_last_latency_ms": analytics.last_latency_ms,
                 "queryflux_requests": analytics.queryflux_requests,
             }
         }

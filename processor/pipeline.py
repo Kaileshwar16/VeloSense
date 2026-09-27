@@ -1,6 +1,7 @@
 import json
 import time
 from datetime import datetime, timezone
+from uuid import uuid4
 
 import redis
 from pydantic import ValidationError
@@ -24,6 +25,7 @@ class Processor:
         self.live = live or redis.Redis.from_url(settings.redis_url, decode_responses=True)
         self.analytics = analytics or ClickHouse(settings)
         self.counters = {
+            "instance_id": str(uuid4()),
             "consumed": 0,
             "accepted": 0,
             "duplicates_ignored": 0,

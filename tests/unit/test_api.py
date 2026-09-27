@@ -124,3 +124,11 @@ async def test_unknown_path_has_consistent_error(api):
     response = await api.get("/missing")
     assert response.status_code == 404
     assert response.json()["error"]["code"] == 404
+
+
+async def test_metrics_include_analytical_latency(api):
+    assert (await api.get("/api/v1/analytics/idling")).status_code == 200
+    metrics = (await api.get("/api/v1/system/metrics")).json()["data"]
+    assert metrics["analytics_latency_ms_total"] > 0
+    assert metrics["analytics_last_latency_ms"] > 0
+    assert metrics["analytics_running"] == metrics["analytics_waiting"] == 0

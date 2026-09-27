@@ -1,5 +1,6 @@
 """Environment configuration; secrets stay out of logs and responses."""
 
+import math
 import os
 from dataclasses import dataclass, field
 
@@ -36,9 +37,15 @@ class Settings:
     fuel_price: float = field(
         default_factory=lambda: float(os.getenv("FUEL_PRICE_PER_LITRE", "100"))
     )
-    speeding_kmh: float = 100
-    brake_mps2: float = -3
-    accel_mps2: float = 3
+    speeding_kmh: float = field(
+        default_factory=lambda: float(os.getenv("SPEEDING_THRESHOLD_KMH", "100"))
+    )
+    brake_mps2: float = field(
+        default_factory=lambda: float(os.getenv("HARSH_BRAKE_THRESHOLD_MPS2", "-3"))
+    )
+    accel_mps2: float = field(
+        default_factory=lambda: float(os.getenv("HARSH_ACCEL_THRESHOLD_MPS2", "3"))
+    )
     online_seconds: int = 60
     dedup_seconds: int = 86400
     max_gap_seconds: int = 10
@@ -46,3 +53,12 @@ class Settings:
         default_factory=lambda: int(os.getenv("MAX_ANALYTICAL_QUERIES", "4"))
     )
     topic: str = "valeosense.telemetry.v1"
+
+    def __post_init__(self):
+        positive = (self.idling_seconds, self.speeding_kmh, self.accel_mps2)
+        if any(not math.isfinite(value) or value <= 0 for value in positive):
+            raise ValueError("detector thresholds must be finite and positive")
+        if not math.isfinite(self.brake_mps2) or self.brake_mps2 >= 0:
+            raise ValueError("braking threshold must be finite and negative")
+        if self.max_analytics < 1:
+            raise ValueError("MAX_ANALYTICAL_QUERIES must be positive")

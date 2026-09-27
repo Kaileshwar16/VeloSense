@@ -18,13 +18,17 @@ The saved short benchmark sustained a 1K readings/sec generation target; the
 monitoring exposes operational signals. No 100K events/sec, production SLA,
 customer savings or predictive-maintenance accuracy is claimed.
 
-## 2. Problem statement and validation
+## 2. Problem Statement & Validation
+
+### 2.1 Problem Statement
 
 A fleet manager needs current state and historical incident context because
 continuous telemetry and historical scans have different storage/access needs.
 The prototype evaluates workload separation; it does not establish that every
 relational implementation is unsuitable. Drivers and operations teams are
 secondary stakeholders; no real driver data is collected.
+
+### 2.2 Evidence & Validation
 
 | Evidence or assumption | Method | Result / confidence |
 |---|---|---|
@@ -34,6 +38,8 @@ secondary stakeholders; no real driver data is collected.
 | Fuel cost | 0.8 L/h, INR 100/L for ICE | Explicit assumption, no customer validation |
 | Business impact | No interviews or field study | Unvalidated; no measured savings |
 
+### 2.3 Impact & Success Metrics
+
 Success criteria are functioning stateful telemetry, correct tested detectors,
 bounded queues, independent live/analytical access and honest performance evidence.
 At 100K registered vehicles, only the configured active subset emits readings.
@@ -41,7 +47,9 @@ Fleet size alone does not determine throughput or monetary impact. Existing OEM
 portals and telematics products were not benchmarked; no competitive superiority
 claim is made.
 
-## 3. Solution and user journey
+## 3. Solution Description
+
+### 3.1 Solution Overview & User Journey
 
 Start the stack and simulator, authenticate to the dashboard, inspect live vehicles
 and active alerts, open a vehicle's history, then inspect idling estimates and
@@ -49,6 +57,14 @@ analytical routing. An incident provides context for operator investigation;
 the system does not remotely control a vehicle.
 
 ![Actual working dashboard](../artifacts/dashboard-desktop.png)
+
+### 3.2 Key Value Proposition
+
+Fleet operators can inspect current incidents and recent history without making
+live-state requests wait in the analytical queue. Estimated idle fuel cost is an
+explicit assumption to support investigation, not a demonstrated saving.
+
+### 3.3 Innovative Ideas
 
 The implementation combines three practical techniques: live/history separation,
 deterministic replay keys with deduplicated analytical views, and explicit route
@@ -69,7 +85,9 @@ Video timestamps below remain pending until the team records the demo.
 | Optional Grafana dashboard | Could / Done | `backend/monitoring.py`, `infra/monitoring/` | Pending |
 | Multi-tenant identity and cold archive | Won't in prototype / Planned | No implementation | Not applicable |
 
-## 5. High-level architecture
+## 5. Solution Architecture
+
+### 5.1 Architecture Overview
 
 The fleet manager uses React over HTTP; FastAPI authenticates API requests and
 reads Redis/PostgreSQL directly. Analytical templates use either ClickHouse HTTP
@@ -78,10 +96,14 @@ processor writes ClickHouse batches and Redis state before committing offsets.
 See the [architecture diagram](architecture.mmd) and [ER diagram](er-diagram.mmd).
 Per-hop latency distributions have not been measured.
 
+### 5.2 Technology Stack & Justification
+
 Kafka provides replay and buffering; Redis supports bounded live reads;
 PostgreSQL enforces fleet/vehicle relationships; ClickHouse serves history. Python
 and Compose keep this prototype operable on one machine. Flink, Kubernetes and
 an embedded analytical engine were not required for the measured scope.
+
+### 5.3 Data Architecture
 
 Metadata separates fleets and vehicles but deliberately repeats OEM/model values;
 full catalog normalization is deferred. Historical rows denormalize fleet and
@@ -95,15 +117,19 @@ For capacity planning only, **assuming** 1 KB/event, 1K events/sec produces roug
 would multiply this by 100. These are arithmetic estimates, not measured disk use.
 ClickHouse partitions monthly and orders telemetry by vehicle/time/event ID.
 The [measured lookup optimization](sql-optimization.md) reduced rows read from
-226,112 to 2,048, with median execution 20.883 ms to 2.700 ms. Only one before/after
+515,271 to 4,096, with median execution 23.693 ms to 2.402 ms. Only one before/after
 query comparison is recorded; three-query optimization evidence is incomplete.
+
+### 5.4 Deployment View
 
 Deployment is local Docker Compose with one broker, one processor and one replica
 per data service. Published ports bind to loopback. Credentials come from ignored
 local configuration. Optional `queryflux` and `monitoring` profiles extend the
 stack. No cloud portability trial, autoscaling or failover deployment was performed.
 
-## 6. Low-level design
+## 6. Low-Level Design
+
+### 6.1 Layering & Separation of Concerns
 
 `simulator/` owns stateful generation and producer pacing; `processor/` owns
 validation, detectors and sink sequencing; `shared/` provides canonical models,
@@ -112,10 +138,21 @@ admission; `frontend/` owns presentation. `tests/unit/` uses explicit test doubl
 `tests/integration/` uses real services. `infra/` holds schemas and deployment;
 `scripts/` holds setup, seed, benchmark and verification commands.
 
+### 6.2 Design Principles Applied
+
 This is a pragmatic layered prototype, not strict hexagonal architecture: SQL
 templates remain in API handlers and processors know sink adapters. Detectors
 are independently testable. Environment configuration, bounded queues, explicit
 failures and narrow adapters keep responsibilities understandable.
+
+### 6.3 Design Patterns Used
+
+Storage adapters in `shared/storage.py` isolate client operations.
+`backend/analytics.py` selects one explicit route and applies a semaphore to
+bound analytical concurrency. Deterministic event keys plus dedup implement
+practical replay protection. No distributed saga or transactional outbox is claimed.
+
+### 6.4 Interfaces, Contracts & Runtime Flows
 
 Telemetry uses JSON with Pydantic validation and vehicle IDs as Kafka keys on
 `valeosense.telemetry.v1`. The v1 API provides bounded pagination and a consistent
@@ -153,6 +190,8 @@ sequenceDiagram
   P->>K: Commit offsets
 ```
 
+### 6.5 Algorithms & Data Structures
+
 Per event: validate, skip duplicate, retain late history without changing live
 state, calculate transitions from prior reading, then queue sink writes. Hash
 lookups and scalar detectors take expected O(1) time per event. Batch working
@@ -165,8 +204,8 @@ across sinks are not implemented.
 | Target | Evidence / status |
 |---|---|
 | 100K+ events/sec | Not achieved; higher targets stopped after 10K saturation |
-| Stable 1K generation target | 999.73/sec; full-path startup/drain-inclusive consumption 896.18/sec |
-| 10K generation target | 9,996.21/sec generation, 36.09-second drain; unstable |
+| Stable 1K generation target | 999.87/sec; full-path startup/drain-inclusive consumption 923.99/sec |
+| 10K generation target | 9,997.86/sec generation, 24.53-second drain; unstable |
 | Dashboard under 2s / critical alert under 5s | Not established; dashboard polls every 3s |
 | API p95 <200ms / p99 <500ms | Percentile benchmark not performed |
 | Replay recovery | Tested sink failure/replay; no full chaos campaign |
@@ -174,7 +213,8 @@ across sinks are not implemented.
 
 The saved test host reports eight logical CPUs and approximately 8 GB RAM.
 See [benchmark evidence](benchmark.md) and [verification](verification.md).
-Monitoring introduces extra work and was not enabled in the original benchmark.
+The latest benchmark ran with optional monitoring enabled and no concurrent demo simulator.
+These 15-second stages do not establish long-duration sustained capacity.
 
 ## 8. Security and compliance
 
@@ -191,8 +231,8 @@ claimed. Warm TTL is deletion, not archival or a complete erasure workflow.
 
 ## 9. Test strategy
 
-The current suite has 45 unit/API/exporter tests and one real Kafka integration
-test. All 46 passed with QueryFlux expected. Tests cover stateful scenarios,
+The latest unit/API/exporter/benchmark tests and the real Kafka integration result
+are recorded in [verification.md](verification.md). Tests cover stateful scenarios,
 validation, detector continuity, dedup, late events, sink failure, route pagination
 trust, and missing/stale monitoring values. Real browser and monitoring checks are
 separate commands. CI runs lint, unit tests and frontend build; it does not run
@@ -208,7 +248,9 @@ producer/consumer rates and lag, then inspect processor/sink logs and API errors
 Counters are process-local; mean API duration and latest-batch latency are not
 percentiles. Distributed tracing and outbound alert notifications are deferred.
 
-## 11. AI / ML
+## 11. AI / ML Component
+
+No ML model is required for the current solution.
 
 No runtime ML model or LLM agent is used. Explicit physical thresholds and episode
 state implement detection. Codex assisted development; it is not part of the

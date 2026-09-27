@@ -14,6 +14,7 @@ try {
   await page.getByRole('button', { name: 'Open fleet overview' }).click();
   await page.getByRole('heading', { name: 'Every signal. A clearer picture.' }).waitFor();
   await page.locator('.stat').first().getByText('1,00,000', { exact: true }).waitFor();
+  await page.getByLabel('Query counters').getByText('Analytics queries').waitFor();
   await page.getByRole('button', { name: 'V000001', exact: true }).first().click();
   await page.getByRole('dialog').waitFor();
   await page.locator('.modal tbody tr').first().waitFor();
@@ -30,7 +31,7 @@ try {
   assert.deepEqual(errors, [], 'browser JavaScript errors');
   const evidence = { verified_at: new Date().toISOString(), browser: await browser.version(),
     checks: ['API-key login', '100000 registry card', 'live-feed table', 'real historical query dialog',
-      'pagination next and previous', 'no failing data panel', 'no JavaScript errors', 'desktop and mobile screenshots'],
+      'pagination next and previous', 'live/metadata/analytics query counters', 'no failing data panel', 'no JavaScript errors', 'desktop and mobile screenshots'],
     passed: true };
   await writeFile('../artifacts/browser-smoke.json', JSON.stringify(evidence, null, 2));
   console.log(JSON.stringify(evidence, null, 2));

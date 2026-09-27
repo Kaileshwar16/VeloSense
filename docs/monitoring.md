@@ -49,7 +49,7 @@ rates, committed Kafka lag, accepted/duplicate/invalid/late events, incidents,
 processor errors, API requests/errors and mean duration, analytical concurrency,
 route attempt rates, and QueryFlux verification in the current API process.
 
-- A report older than five seconds is marked as not reporting. Its operational
+- A report older than five seconds, or an explicitly stopped simulator, is marked as not reporting. Its operational
   counters, throughput and lag are omitted; unknown lag is never converted to zero.
 - Heartbeat age remains available until Redis expires the report after 120 seconds.
 - A failed upstream request returns HTTP 503 from the exporter, giving Prometheus

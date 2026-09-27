@@ -18,6 +18,8 @@ class Analytics:
         self.slots = asyncio.Semaphore(settings.max_analytics)
         self.running = self.waiting = self.requests = self.errors = self.queryflux_requests = 0
         self.last_execution = None
+        self.latency_ms_total = 0.0
+        self.last_latency_ms = None
         self.routes = {"direct:clickhouse": 0, "queryflux:clickhouse": 0}
 
     async def execute(self, sql: str):
@@ -59,6 +61,8 @@ class Analytics:
             self.errors += 1
             raise
         finally:
+            self.last_latency_ms = (time.perf_counter() - started) * 1000
+            self.latency_ms_total += self.last_latency_ms
             self.running -= 1
             self.slots.release()
 

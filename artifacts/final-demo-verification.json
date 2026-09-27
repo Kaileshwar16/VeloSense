@@ -1,0 +1,98 @@
+{
+  "verified_at": "2026-09-27T16:08:32.371323+00:00",
+  "health": {
+    "status": "ok",
+    "services": {
+      "redis": "ok",
+      "postgres": "ok",
+      "clickhouse": "ok"
+    }
+  },
+  "summary": {
+    "registered_vehicles": 100000,
+    "online_vehicles": 1000,
+    "currently_idling": 124,
+    "active_alerts": 321,
+    "events_per_sec": 416.8,
+    "processor_reporting": true
+  },
+  "active_alert_types": [
+    "ENGINE_FAULT",
+    "HARSH_ACCELERATION",
+    "IDLING_ALERT",
+    "LOW_ENERGY",
+    "SPEEDING"
+  ],
+  "live_vehicle_id": "V000001",
+  "live_event_id": "ba057f6e-103c-5144-9a27-0fbb96fd0413",
+  "live_timestamp": "2026-09-27T16:08:30.848738Z",
+  "matching_historical_reading": true,
+  "comparison_tolerance": "ClickHouse DateTime64(3): <1ms; Float32 speed: 0.0001 km/h",
+  "history_execution": {
+    "route": "queryflux",
+    "engine": "clickhouse",
+    "latency_ms": 10.56
+  },
+  "idling_execution": {
+    "route": "queryflux",
+    "engine": "clickhouse",
+    "latency_ms": 39.97
+  },
+  "metrics": {
+    "processor": {
+      "instance_id": "01c662fb-f03e-4e4e-9a1f-139874cea719",
+      "consumed": 142500,
+      "accepted": 139464,
+      "duplicates_ignored": 2436,
+      "validation_errors": 600,
+      "late_events": 1187,
+      "alerts_generated": 1050,
+      "processor_errors": 0,
+      "consumer_lag": 1278,
+      "consumed_per_sec": 416.8292847966819,
+      "event_latency_ms": 0,
+      "updated_at": 1790525311.966428
+    },
+    "simulator": {
+      "generated": 139500,
+      "emitted": 141918,
+      "published": 141405,
+      "errors": 0,
+      "backpressure": 0,
+      "generated_per_sec": 999.9385497771866,
+      "updated_at": 1790525310.8617516,
+      "running": true
+    },
+    "api": {
+      "requests": 88,
+      "errors": 0,
+      "latency_ms_total": 1621.8198009919433,
+      "live_queries": 17,
+      "metadata_queries": 40
+    },
+    "analytics_running": 0,
+    "analytics_waiting": 0,
+    "analytics_requests": 17,
+    "analytics_errors": 0,
+    "analytics_latency_ms_total": 895.5682070009061,
+    "analytics_last_latency_ms": 39.98116700131504,
+    "queryflux_requests": 17
+  },
+  "routing": {
+    "live": "redis",
+    "metadata": "postgresql",
+    "analytics_configured_route": "queryflux",
+    "engine": "clickhouse",
+    "routing_counts": {
+      "direct:clickhouse": 0,
+      "queryflux:clickhouse": 17
+    },
+    "last_successful_execution": {
+      "route": "queryflux",
+      "engine": "clickhouse",
+      "latency_ms": 39.97
+    },
+    "queryflux_verified_in_process": true
+  },
+  "passed": true
+}

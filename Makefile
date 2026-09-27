@@ -1,6 +1,6 @@
 PY := .venv/bin/python
 COMPOSE := docker compose --env-file .env -f infra/docker-compose.yml
-.PHONY: setup seed up infra simulator demo test integration lint frontend-build benchmark down queryflux api processor sql-evidence browser-test routed-api up-queryflux monitoring monitoring-down monitoring-test
+.PHONY: setup seed up infra simulator demo demo-queryflux test integration lint frontend-build benchmark down queryflux api processor sql-evidence browser-test routed-api up-queryflux monitoring monitoring-down monitoring-test
 setup:
 	python3 scripts/setup_env.py
 	python3 -m venv .venv
@@ -18,6 +18,9 @@ simulator:
 	$(PY) -m simulator.cli --vehicles 100000 --active-vehicles 1000 --rate 1000 --duration 0
 demo:
 	$(COMPOSE) --profile demo up --build -d
+demo-queryflux:
+	$(PY) -m scripts.queryflux_config --compose
+	ANALYTICS_ROUTE=queryflux $(COMPOSE) --profile queryflux --profile demo up --build -d
 test:
 	$(PY) -m pytest -q
 integration:

@@ -28,7 +28,7 @@ def render_metrics(metrics: dict, routing: dict, now: float) -> str:
         data = metrics.get(source) or {}
         updated = data.get("updated_at")
         age = max(0, now - updated) if isinstance(updated, (int, float)) else None
-        fresh = age is not None and age < 5
+        fresh = age is not None and age < 5 and data.get("running") is not False
         emit(f"{source}_reporting", int(fresh), help_text="Heartbeat is less than 5 seconds old.")
         emit(f"{source}_heartbeat_age_seconds", age)
         # Redis can retain a stopped process's last report for 120s. Do not expose
@@ -66,6 +66,9 @@ def render_metrics(metrics: dict, routing: dict, now: float) -> str:
         emit(f"{key}_total", metrics.get(key), "counter")
     for key in ("analytics_running", "analytics_waiting"):
         emit(key, metrics.get(key))
+    latency = metrics.get("analytics_latency_ms_total")
+    if isinstance(latency, (int, float)):
+        emit("analytics_request_duration_seconds_total", latency / 1000, "counter")
     counts = routing.get("routing_counts") or {}
     for route in ("direct", "queryflux"):
         emit(f"route_{route}_requests_total", counts.get(f"{route}:clickhouse"), "counter")

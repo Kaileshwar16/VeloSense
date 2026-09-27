@@ -12,3 +12,6 @@ flowchart LR
     QF -->|"HTTP / Arrow"| CH
     API -.->|"HTTP SQL · explicit direct mode"| CH
     CH -.->|"Future only · export"| Cold["COLD · Parquet / S3\nnot implemented"]
+    Exporter["Optional metrics exporter"] -->|"Authenticated HTTP metrics reads"| API
+    Prom["Optional Prometheus"] -->|"HTTP scrape every 10s"| Exporter
+    Grafana["Optional Grafana"] -->|"HTTP PromQL"| Prom

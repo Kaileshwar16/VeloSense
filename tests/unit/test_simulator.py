@@ -112,6 +112,12 @@ def test_probability_validation():
         SimulationConfig(probabilities={**DEFAULT_PROBABILITIES, "NORMAL": 2})
 
 
+@pytest.mark.parametrize("value", [float("nan"), float("inf"), -0.1])
+def test_probability_weights_must_be_finite_and_nonnegative(value):
+    with pytest.raises(ValueError):
+        SimulationConfig(probabilities={**DEFAULT_PROBABILITIES, "NORMAL": value})
+
+
 @pytest.mark.parametrize(
     "field,value",
     [

@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 from uuid import uuid4
 
+import pytest
+
 from processor.detectors import transition
 from shared.config import Settings
 from shared.models import Telemetry
@@ -92,3 +94,18 @@ def test_ev_has_no_fuel_cost_and_ice_estimate_is_explicit(event):
             tick(event, 1, speed_kmh=0, fuel_pct=fuel, soc_pct=soc), previous, settings
         )
         assert abs(row["estimated_cost"] - expected) < 1e-10
+
+
+def test_braking_threshold_can_be_configured_from_environment(event, monkeypatch):
+    monkeypatch.setenv("HARSH_BRAKE_THRESHOLD_MPS2", "-7")
+    settings = Settings()
+    previous, *_ = transition(tick(event, 0, speed_kmh=82), None, settings)
+    _, _, alerts, _ = transition(tick(event, 1, speed_kmh=60), previous, settings)
+    assert alerts == []  # -6.11 m/s² is below the default threshold, but not -7.
+
+
+@pytest.mark.parametrize("threshold", ["0", "3", "nan", "-inf"])
+def test_invalid_braking_configuration_fails_fast(threshold, monkeypatch):
+    monkeypatch.setenv("HARSH_BRAKE_THRESHOLD_MPS2", threshold)
+    with pytest.raises(ValueError, match="braking threshold"):
+        Settings()

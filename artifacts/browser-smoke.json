@@ -1,5 +1,5 @@
 {
-  "verified_at": "2026-09-27T15:49:20.924Z",
+  "verified_at": "2026-09-27T16:06:53.732Z",
   "browser": "146.0.7680.80",
   "checks": [
     "API-key login",
@@ -7,6 +7,7 @@
     "live-feed table",
     "real historical query dialog",
     "pagination next and previous",
+    "live/metadata/analytics query counters",
     "no failing data panel",
     "no JavaScript errors",
     "desktop and mobile screenshots"

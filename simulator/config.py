@@ -1,3 +1,4 @@
+import math
 from dataclasses import dataclass, field
 
 DEFAULT_PROBABILITIES = {
@@ -32,7 +33,7 @@ class SimulationConfig:
     def __post_init__(self):
         if set(self.probabilities) != set(DEFAULT_PROBABILITIES):
             raise ValueError("probabilities must specify every supported scenario")
-        if any(value < 0 for value in self.probabilities.values()):
-            raise ValueError("probabilities cannot be negative")
+        if any(not math.isfinite(value) or value < 0 for value in self.probabilities.values()):
+            raise ValueError("probabilities must be finite and nonnegative")
         if abs(sum(self.probabilities.values()) - 1) > 1e-6:
             raise ValueError("probabilities must sum to 1")

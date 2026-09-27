@@ -1,0 +1,8 @@
+{
+  "verified_at": "2026-09-27T15:58:11.464741+00:00",
+  "records": 100000,
+  "unique_ids": 100000,
+  "unique_vins": 100000,
+  "seed": 42,
+  "sha256": "84d3f41e6c2ee91b0a87dba82fc64801e4062750a1a0cc557df95532dae473f8"
+}

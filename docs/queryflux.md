@@ -12,6 +12,9 @@ make up-queryflux
 RUN_INTEGRATION=1 EXPECT_QUERYFLUX=1 .venv/bin/pytest tests/integration -q
 ```
 
+For a single-command routed demo with the safe 1K/sec simulator included, use
+`make demo-queryflux` after setup. `make demo` selects the direct analytical route.
+
 The optional `queryflux` profile uses upstream image
 `ghcr.io/lakeops-org/queryflux@sha256:1da899cddf3c95c41ac074d8dd6f3de59dd10050abc344fdd19528e874b4f2e3`.
 The config generator creates ignored `artifacts/queryflux.compose.yaml` with

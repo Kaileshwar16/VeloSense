@@ -7,10 +7,13 @@
   "published": 152595,
   "errors": 0,
   "error": null,
+  "cleanup_errors": [],
+  "undelivered": 0,
+  "running": false,
   "backpressure": 0,
-  "duration_seconds": 15.00568094800019,
-  "generated_per_sec": 9996.214135153296,
-  "published_per_sec": 10169.148639691448,
+  "duration_seconds": 15.003213732999939,
+  "generated_per_sec": 9997.857970260819,
+  "published_per_sec": 10170.82091314633,
   "sink": "kafka",
-  "updated_at": 1790519884.1540427
+  "updated_at": 1790525083.9933617
 }

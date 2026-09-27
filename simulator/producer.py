@@ -10,6 +10,7 @@ class KafkaProducer:
         self.published = 0
         self.errors = 0
         self.backpressure = 0
+        self.undelivered = 0
         self.producer = Producer(
             {
                 "bootstrap.servers": servers,
@@ -54,6 +55,7 @@ class KafkaProducer:
 
     def close(self):
         pending = self.producer.flush(35)
+        self.undelivered = pending
         if pending or self.errors:
             raise RuntimeError(
                 f"Kafka shutdown: {pending} undelivered; {self.errors} delivery errors"
