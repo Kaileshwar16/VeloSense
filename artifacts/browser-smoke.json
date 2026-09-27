@@ -1,0 +1,15 @@
+{
+  "verified_at": "2026-09-27T15:03:34.579Z",
+  "browser": "146.0.7680.80",
+  "checks": [
+    "API-key login",
+    "100000 registry card",
+    "live-feed table",
+    "real historical query dialog",
+    "pagination next and previous",
+    "no failing data panel",
+    "no JavaScript errors",
+    "desktop and mobile screenshots"
+  ],
+  "passed": true
+}
