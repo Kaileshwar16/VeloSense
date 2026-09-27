@@ -11,6 +11,7 @@ from shared.config import Settings
 
 def main():
     logging.basicConfig(level=logging.INFO, format="%(message)s")
+    logging.getLogger("httpx").setLevel(logging.WARNING)
     settings = Settings()
     processor = Processor(settings)
     # The prototype has one state owner. Fail closed rather than race detector state.

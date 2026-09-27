@@ -21,6 +21,7 @@ class QueryFluxClient:
         rows, columns = [], []
         deadline = time.monotonic() + 25
         next_uri = None
+        cancel_uri = None
         try:
             while True:
                 if page.get("error"):
@@ -46,6 +47,7 @@ class QueryFluxClient:
                     ):
                         raise RuntimeError("QueryFlux returned an untrusted pagination origin")
                     next_uri = self.url + parsed.path + ("?" + parsed.query if parsed.query else "")
+                cancel_uri = next_uri
                 if time.monotonic() > deadline:
                     raise TimeoutError("QueryFlux query exceeded 25 seconds")
                 await asyncio.sleep(0.02)
@@ -53,9 +55,9 @@ class QueryFluxClient:
                 response.raise_for_status()
                 page = response.json()
         except BaseException:
-            if next_uri:
+            if cancel_uri:
                 try:
-                    await self.client.delete(next_uri)
+                    await self.client.delete(cancel_uri)
                 except httpx.HTTPError:
                     pass  # Original error is preserved; cancellation is best effort.
             raise

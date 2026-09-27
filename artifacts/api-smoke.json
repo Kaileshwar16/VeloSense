@@ -1,0 +1,1127 @@
+{
+  "/health": {
+    "status": 200,
+    "body": {
+      "status": "ok",
+      "services": {
+        "redis": "ok",
+        "postgres": "ok",
+        "clickhouse": "ok"
+      }
+    }
+  },
+  "/api/v1/fleet/summary": {
+    "status": 200,
+    "body": {
+      "data": {
+        "registered_vehicles": 100000,
+        "online_vehicles": 995,
+        "currently_idling": 122,
+        "active_alerts": 233,
+        "events_per_sec": 995.2,
+        "processor_reporting": true
+      }
+    }
+  },
+  "/api/v1/vehicles/V000001/live": {
+    "status": 200,
+    "body": {
+      "data": {
+        "event_id": "c412868d-3dff-5146-b2f2-5d44c0859204",
+        "vehicle_id": "V000001",
+        "vin": "SYN00000000000001",
+        "fleet_id": "F015",
+        "timestamp": "2026-09-27T14:28:22.957579Z",
+        "seq": 32,
+        "lat": 19.076445,
+        "lon": 72.877815,
+        "speed_kmh": 0.0,
+        "heading_deg": 6.9955,
+        "engine_on": true,
+        "fuel_pct": null,
+        "soc_pct": 51.485,
+        "odometer_km": 36809.351,
+        "engine_temp_c": 84.76,
+        "dtc": [],
+        "event_type": "IDLING",
+        "source_oem": "Kia",
+        "schema_version": 1,
+        "idle_start": "2026-09-27T14:27:57.957579Z",
+        "idle_duration_seconds": 25.0,
+        "active_alerts": {
+          "IDLING_ALERT": {
+            "alert_id": "bd3c5363-14d7-559e-866d-b1d6320af2e2",
+            "event_id": "c412868d-3dff-5146-b2f2-5d44c0859204",
+            "vehicle_id": "V000001",
+            "fleet_id": "F015",
+            "timestamp": "2026-09-27T14:28:22.957579Z",
+            "type": "IDLING_ALERT",
+            "start_timestamp": "2026-09-27T14:27:57.957579Z",
+            "duration_seconds": 25.0,
+            "estimated_fuel_l": 0.0,
+            "estimated_cost": 0.0,
+            "detail": "acceleration_mps2=0.00"
+          }
+        },
+        "status": "IDLING",
+        "received_at": "2026-09-27T14:28:23.040403+00:00"
+      }
+    }
+  },
+  "/api/v1/alerts": {
+    "status": 200,
+    "body": {
+      "data": [
+        {
+          "alert_id": "2246ec5a-d37a-5a70-b7af-e024d761262b",
+          "event_id": "1aac398f-268d-54f6-b0b1-516aa8355751",
+          "vehicle_id": "V001000",
+          "fleet_id": "F035",
+          "timestamp": "2026-09-27T14:28:23.956579Z",
+          "type": "ENGINE_FAULT",
+          "start_timestamp": "2026-09-27T14:27:52.956579Z",
+          "duration_seconds": 0.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0,
+          "detail": "P0301,P0420"
+        },
+        {
+          "alert_id": "4acee4c2-5f9a-57d1-97ad-83c3c6941fe2",
+          "event_id": "fcc850e8-7674-53b5-b9d6-ede27436fe9b",
+          "vehicle_id": "V000987",
+          "fleet_id": "F022",
+          "timestamp": "2026-09-27T14:28:23.943579Z",
+          "type": "IDLING_ALERT",
+          "start_timestamp": "2026-09-27T14:27:56.943579Z",
+          "duration_seconds": 27.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "5478ed20-3e6a-5277-92f1-560c85481d54",
+          "event_id": "9950efe8-f658-50bb-814f-202535bb6881",
+          "vehicle_id": "V000983",
+          "fleet_id": "F072",
+          "timestamp": "2026-09-27T14:28:23.939579Z",
+          "type": "IDLING_ALERT",
+          "start_timestamp": "2026-09-27T14:27:58.939579Z",
+          "duration_seconds": 25.0,
+          "estimated_fuel_l": 0.005555555555555556,
+          "estimated_cost": 0.5555555555555556,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "dfe7542a-0078-50d6-bb3b-d97d8e82a0cc",
+          "event_id": "1c96889e-9007-526f-9af1-cbaa78dc1e92",
+          "vehicle_id": "V000974",
+          "fleet_id": "F055",
+          "timestamp": "2026-09-27T14:28:23.930579Z",
+          "type": "SPEEDING",
+          "start_timestamp": "2026-09-27T14:28:03.930579Z",
+          "duration_seconds": 0.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "5e656d80-fba8-5a74-b1fa-03da80627542",
+          "event_id": "2ac1e053-32bc-5275-b61f-0d99d6cbc7a6",
+          "vehicle_id": "V000973",
+          "fleet_id": "F035",
+          "timestamp": "2026-09-27T14:28:23.929579Z",
+          "type": "IDLING_ALERT",
+          "start_timestamp": "2026-09-27T14:27:57.929579Z",
+          "duration_seconds": 26.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "760a8245-73af-523c-b789-1ab945873e37",
+          "event_id": "493cd776-8db8-520d-9c69-7dfd34f863b3",
+          "vehicle_id": "V000971",
+          "fleet_id": "F002",
+          "timestamp": "2026-09-27T14:28:23.927579Z",
+          "type": "IDLING_ALERT",
+          "start_timestamp": "2026-09-27T14:27:56.927579Z",
+          "duration_seconds": 27.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "8adae044-2cdc-5535-b1dd-d2931238ea72",
+          "event_id": "3d9bc549-7585-5243-9074-056229a78ddb",
+          "vehicle_id": "V000960",
+          "fleet_id": "F061",
+          "timestamp": "2026-09-27T14:28:23.916579Z",
+          "type": "IDLING_ALERT",
+          "start_timestamp": "2026-09-27T14:27:55.916579Z",
+          "duration_seconds": 28.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "4e798160-6dec-58db-ad45-52953e0c48e1",
+          "event_id": "6f8ce135-707e-5dcb-9fa0-ee07236dde06",
+          "vehicle_id": "V000958",
+          "fleet_id": "F090",
+          "timestamp": "2026-09-27T14:28:23.914579Z",
+          "type": "SPEEDING",
+          "start_timestamp": "2026-09-27T14:28:11.914579Z",
+          "duration_seconds": 0.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "20716a6e-b054-5250-ab25-42d17a049a07",
+          "event_id": "6f4aa9df-7a34-5b5f-a313-8722b9dc9d47",
+          "vehicle_id": "V000956",
+          "fleet_id": "F009",
+          "timestamp": "2026-09-27T14:28:23.912579Z",
+          "type": "LOW_ENERGY",
+          "start_timestamp": "2026-09-27T14:28:21.912579Z",
+          "duration_seconds": 0.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0,
+          "detail": "acceleration_mps2=-0.68"
+        },
+        {
+          "alert_id": "f2353b8d-1348-53cb-9b4c-c31348364fb3",
+          "event_id": "8f46431b-4cac-5a2f-8fe0-96732f2ae20e",
+          "vehicle_id": "V000951",
+          "fleet_id": "F001",
+          "timestamp": "2026-09-27T14:28:23.907579Z",
+          "type": "ENGINE_FAULT",
+          "start_timestamp": "2026-09-27T14:27:52.907579Z",
+          "duration_seconds": 0.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0,
+          "detail": "P0301,P0420"
+        },
+        {
+          "alert_id": "884bd61b-8258-57b4-8c90-37f75debccf5",
+          "event_id": "0157f45c-dae6-5e2b-bbea-8bf42d6682ac",
+          "vehicle_id": "V000937",
+          "fleet_id": "F090",
+          "timestamp": "2026-09-27T14:28:23.893579Z",
+          "type": "SPEEDING",
+          "start_timestamp": "2026-09-27T14:27:54.893579Z",
+          "duration_seconds": 0.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "b5879544-303b-5c9b-9e15-2a008edcf875",
+          "event_id": "a8640080-a68a-5689-b679-3d154a97f7dd",
+          "vehicle_id": "V000928",
+          "fleet_id": "F053",
+          "timestamp": "2026-09-27T14:28:23.884579Z",
+          "type": "IDLING_ALERT",
+          "start_timestamp": "2026-09-27T14:27:56.884579Z",
+          "duration_seconds": 27.0,
+          "estimated_fuel_l": 0.006,
+          "estimated_cost": 0.6,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "d5d69cae-0000-5afd-8941-6e9dd0425b00",
+          "event_id": "f2c7f8aa-ae90-5c89-9614-cc0b2f454869",
+          "vehicle_id": "V000927",
+          "fleet_id": "F099",
+          "timestamp": "2026-09-27T14:28:23.883579Z",
+          "type": "IDLING_ALERT",
+          "start_timestamp": "2026-09-27T14:27:58.883579Z",
+          "duration_seconds": 25.0,
+          "estimated_fuel_l": 0.005555555555555556,
+          "estimated_cost": 0.5555555555555556,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "f3109de1-b53a-5030-8157-556d55bfbb46",
+          "event_id": "4092249e-809a-5a25-b342-487a4e505639",
+          "vehicle_id": "V000908",
+          "fleet_id": "F036",
+          "timestamp": "2026-09-27T14:28:23.864579Z",
+          "type": "IDLING_ALERT",
+          "start_timestamp": "2026-09-27T14:27:55.864579Z",
+          "duration_seconds": 28.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "2e7faa48-3071-5526-93bc-747db979bba8",
+          "event_id": "09ac76e3-dda3-53d7-a380-e0b46843d7ab",
+          "vehicle_id": "V000902",
+          "fleet_id": "F082",
+          "timestamp": "2026-09-27T14:28:23.858579Z",
+          "type": "IDLING_ALERT",
+          "start_timestamp": "2026-09-27T14:27:57.858579Z",
+          "duration_seconds": 26.0,
+          "estimated_fuel_l": 0.0057777777777777775,
+          "estimated_cost": 0.5777777777777777,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "3c58917b-baa9-5636-9893-a552f547e546",
+          "event_id": "e550f288-acf7-5d90-9075-5c73cf644bc4",
+          "vehicle_id": "V000899",
+          "fleet_id": "F030",
+          "timestamp": "2026-09-27T14:28:23.855579Z",
+          "type": "IDLING_ALERT",
+          "start_timestamp": "2026-09-27T14:27:57.855579Z",
+          "duration_seconds": 26.0,
+          "estimated_fuel_l": 0.0057777777777777775,
+          "estimated_cost": 0.5777777777777777,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "1a085c32-5f77-571b-9567-34eb8e7094dd",
+          "event_id": "2c175893-6f89-5a81-844a-9c413f760c75",
+          "vehicle_id": "V000898",
+          "fleet_id": "F029",
+          "timestamp": "2026-09-27T14:28:23.854579Z",
+          "type": "IDLING_ALERT",
+          "start_timestamp": "2026-09-27T14:27:56.854579Z",
+          "duration_seconds": 27.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "32a24787-e498-5d60-a2e1-433f5b41b611",
+          "event_id": "6c02d707-70d0-529b-9ccf-4086975b63c3",
+          "vehicle_id": "V000896",
+          "fleet_id": "F031",
+          "timestamp": "2026-09-27T14:28:23.852579Z",
+          "type": "SPEEDING",
+          "start_timestamp": "2026-09-27T14:28:05.852579Z",
+          "duration_seconds": 0.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "346302ad-e25e-55c7-82cb-fd584d0482cf",
+          "event_id": "3bf9209c-a05d-5071-b585-436b029fca2e",
+          "vehicle_id": "V000888",
+          "fleet_id": "F100",
+          "timestamp": "2026-09-27T14:28:23.844579Z",
+          "type": "IDLING_ALERT",
+          "start_timestamp": "2026-09-27T14:27:58.844579Z",
+          "duration_seconds": 25.0,
+          "estimated_fuel_l": 0.005555555555555556,
+          "estimated_cost": 0.5555555555555556,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "bdb05865-314a-55f7-822a-09dc932cbc17",
+          "event_id": "55dad372-bf85-5173-996f-492a95b59f9a",
+          "vehicle_id": "V000887",
+          "fleet_id": "F087",
+          "timestamp": "2026-09-27T14:28:23.843579Z",
+          "type": "IDLING_ALERT",
+          "start_timestamp": "2026-09-27T14:27:56.843579Z",
+          "duration_seconds": 27.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "d10b273d-28d9-513b-88f6-68c65c9dde43",
+          "event_id": "99cdc160-63b6-5d1b-8582-9ba9d375d5b6",
+          "vehicle_id": "V000881",
+          "fleet_id": "F043",
+          "timestamp": "2026-09-27T14:28:23.837579Z",
+          "type": "ENGINE_FAULT",
+          "start_timestamp": "2026-09-27T14:27:52.837579Z",
+          "duration_seconds": 0.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0,
+          "detail": "P0301,P0420"
+        },
+        {
+          "alert_id": "da49a3cc-d2de-50c3-b4ea-519d24c3e8c3",
+          "event_id": "f538c9f4-90d6-5691-895d-fd93ab319aae",
+          "vehicle_id": "V000871",
+          "fleet_id": "F029",
+          "timestamp": "2026-09-27T14:28:23.827579Z",
+          "type": "SPEEDING",
+          "start_timestamp": "2026-09-27T14:28:06.827579Z",
+          "duration_seconds": 0.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "13165ba0-3936-5ee1-a5cc-007fedb6454a",
+          "event_id": "eed18075-325b-5e00-b317-559dca78a5eb",
+          "vehicle_id": "V000870",
+          "fleet_id": "F049",
+          "timestamp": "2026-09-27T14:28:23.826579Z",
+          "type": "IDLING_ALERT",
+          "start_timestamp": "2026-09-27T14:27:58.826579Z",
+          "duration_seconds": 25.0,
+          "estimated_fuel_l": 0.005555555555555556,
+          "estimated_cost": 0.5555555555555556,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "8818c632-07be-5a36-a92a-746f93428970",
+          "event_id": "1e040448-08b0-5f58-bd04-7578c583301f",
+          "vehicle_id": "V000869",
+          "fleet_id": "F038",
+          "timestamp": "2026-09-27T14:28:23.825579Z",
+          "type": "SPEEDING",
+          "start_timestamp": "2026-09-27T14:28:01.825579Z",
+          "duration_seconds": 0.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "409c5f7b-e445-5b98-ab69-05f3a31d08d7",
+          "event_id": "c0dd9b4e-48e6-59ee-adf0-b2ca4ad4681e",
+          "vehicle_id": "V000866",
+          "fleet_id": "F052",
+          "timestamp": "2026-09-27T14:28:23.822579Z",
+          "type": "IDLING_ALERT",
+          "start_timestamp": "2026-09-27T14:27:57.822579Z",
+          "duration_seconds": 26.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "93de7fd5-edcb-5b58-b578-51f941271a94",
+          "event_id": "5ac6cfae-d9fe-5521-bd8b-af593d676c74",
+          "vehicle_id": "V000859",
+          "fleet_id": "F025",
+          "timestamp": "2026-09-27T14:28:23.815579Z",
+          "type": "IDLING_ALERT",
+          "start_timestamp": "2026-09-27T14:27:58.815579Z",
+          "duration_seconds": 25.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "62e59ae8-7c27-5c07-8fbe-2653d68dabcd",
+          "event_id": "fc099702-b639-51ea-9b75-fd4fab84deb7",
+          "vehicle_id": "V000845",
+          "fleet_id": "F024",
+          "timestamp": "2026-09-27T14:28:23.801579Z",
+          "type": "IDLING_ALERT",
+          "start_timestamp": "2026-09-27T14:27:58.801579Z",
+          "duration_seconds": 25.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "70c8b037-0737-5fd8-bae6-5da9b2fb72a8",
+          "event_id": "b8dd9a18-8f65-5882-bb18-f9499bb97478",
+          "vehicle_id": "V000837",
+          "fleet_id": "F037",
+          "timestamp": "2026-09-27T14:28:23.793579Z",
+          "type": "IDLING_ALERT",
+          "start_timestamp": "2026-09-27T14:27:56.793579Z",
+          "duration_seconds": 27.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "f2350afb-4fb8-5255-9b0f-e3a3f6cdd069",
+          "event_id": "51d20091-fadd-533e-b762-00675dd76cf6",
+          "vehicle_id": "V000834",
+          "fleet_id": "F062",
+          "timestamp": "2026-09-27T14:28:23.790579Z",
+          "type": "IDLING_ALERT",
+          "start_timestamp": "2026-09-27T14:27:55.790579Z",
+          "duration_seconds": 28.0,
+          "estimated_fuel_l": 0.006222222222222223,
+          "estimated_cost": 0.6222222222222222,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "50229feb-cc70-54e4-884e-d46b5406ce83",
+          "event_id": "6e014c4a-fa86-5d17-bc4a-d373a97c8ad2",
+          "vehicle_id": "V000828",
+          "fleet_id": "F089",
+          "timestamp": "2026-09-27T14:28:23.784579Z",
+          "type": "SPEEDING",
+          "start_timestamp": "2026-09-27T14:28:09.784579Z",
+          "duration_seconds": 0.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "1e48dcf5-a3d5-5f87-be10-b021f617e30c",
+          "event_id": "b487cec3-d45f-558e-b649-9dfe835e4222",
+          "vehicle_id": "V000825",
+          "fleet_id": "F007",
+          "timestamp": "2026-09-27T14:28:23.781579Z",
+          "type": "SPEEDING",
+          "start_timestamp": "2026-09-27T14:27:56.781579Z",
+          "duration_seconds": 0.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "f57c75c6-6de9-51f7-b592-e8e8da03d360",
+          "event_id": "ebd4afb1-588c-5959-976c-6b26e9635f6a",
+          "vehicle_id": "V000822",
+          "fleet_id": "F097",
+          "timestamp": "2026-09-27T14:28:23.778579Z",
+          "type": "ENGINE_FAULT",
+          "start_timestamp": "2026-09-27T14:27:52.778579Z",
+          "duration_seconds": 0.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0,
+          "detail": "P0301,P0420"
+        },
+        {
+          "alert_id": "4f3b1828-1281-5cb9-b8ff-20f4b1e93fb8",
+          "event_id": "53b77e58-a336-5ea1-8588-1b5e3eb91d86",
+          "vehicle_id": "V000821",
+          "fleet_id": "F028",
+          "timestamp": "2026-09-27T14:28:23.777579Z",
+          "type": "IDLING_ALERT",
+          "start_timestamp": "2026-09-27T14:27:56.777579Z",
+          "duration_seconds": 27.0,
+          "estimated_fuel_l": 0.006,
+          "estimated_cost": 0.6,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "acc51197-8bc4-5c59-81c0-414d9ca7bc94",
+          "event_id": "b87282ec-b91b-56de-bda6-19722f76f7a2",
+          "vehicle_id": "V000809",
+          "fleet_id": "F007",
+          "timestamp": "2026-09-27T14:28:23.765579Z",
+          "type": "IDLING_ALERT",
+          "start_timestamp": "2026-09-27T14:27:55.765579Z",
+          "duration_seconds": 28.0,
+          "estimated_fuel_l": 0.006222222222222223,
+          "estimated_cost": 0.6222222222222222,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "b27d1bec-abb3-5b47-9cdd-a11a8da64a78",
+          "event_id": "60d2e113-568f-5e00-98e0-d79c095d7002",
+          "vehicle_id": "V000806",
+          "fleet_id": "F079",
+          "timestamp": "2026-09-27T14:28:23.762579Z",
+          "type": "SPEEDING",
+          "start_timestamp": "2026-09-27T14:28:03.762579Z",
+          "duration_seconds": 0.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "b4f34260-4578-5b7d-a0c9-2028a8f09081",
+          "event_id": "56673ead-fc02-5806-8587-bae9271c229a",
+          "vehicle_id": "V000796",
+          "fleet_id": "F035",
+          "timestamp": "2026-09-27T14:28:23.752579Z",
+          "type": "IDLING_ALERT",
+          "start_timestamp": "2026-09-27T14:27:57.752579Z",
+          "duration_seconds": 26.0,
+          "estimated_fuel_l": 0.0057777777777777775,
+          "estimated_cost": 0.5777777777777777,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "c4745d52-9e32-5d62-8d39-3ef640d0643a",
+          "event_id": "8b571f28-3549-596b-9290-fcb465cf85be",
+          "vehicle_id": "V000793",
+          "fleet_id": "F002",
+          "timestamp": "2026-09-27T14:28:23.749579Z",
+          "type": "IDLING_ALERT",
+          "start_timestamp": "2026-09-27T14:27:58.749579Z",
+          "duration_seconds": 25.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "dba768f8-2bb4-5983-a86c-e1189899b9b2",
+          "event_id": "9fc2e973-d8ce-50a8-8d15-4526c8db82f1",
+          "vehicle_id": "V000789",
+          "fleet_id": "F010",
+          "timestamp": "2026-09-27T14:28:23.745579Z",
+          "type": "SPEEDING",
+          "start_timestamp": "2026-09-27T14:28:00.745579Z",
+          "duration_seconds": 0.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "96eaae3b-992d-5cf3-931d-ec78ea1193d6",
+          "event_id": "fdfd6536-ec35-5f43-b838-144fe2bbe4a7",
+          "vehicle_id": "V000783",
+          "fleet_id": "F066",
+          "timestamp": "2026-09-27T14:28:23.739579Z",
+          "type": "IDLING_ALERT",
+          "start_timestamp": "2026-09-27T14:27:55.739579Z",
+          "duration_seconds": 28.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "edf2f317-00ab-5f36-af69-3b84579a3dfb",
+          "event_id": "4cba2b64-8dc7-5582-92f6-49669ee116ec",
+          "vehicle_id": "V000780",
+          "fleet_id": "F016",
+          "timestamp": "2026-09-27T14:28:23.736579Z",
+          "type": "IDLING_ALERT",
+          "start_timestamp": "2026-09-27T14:27:58.736579Z",
+          "duration_seconds": 25.0,
+          "estimated_fuel_l": 0.005555555555555556,
+          "estimated_cost": 0.5555555555555556,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "76461746-682a-5730-b61a-d7abb79547a8",
+          "event_id": "e450abb9-fdd8-5362-acf8-56edb97b4c77",
+          "vehicle_id": "V000773",
+          "fleet_id": "F068",
+          "timestamp": "2026-09-27T14:28:23.729579Z",
+          "type": "IDLING_ALERT",
+          "start_timestamp": "2026-09-27T14:27:56.729579Z",
+          "duration_seconds": 27.0,
+          "estimated_fuel_l": 0.006,
+          "estimated_cost": 0.6,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "f2aa671c-cfd6-5b30-8e4b-1deda548abf7",
+          "event_id": "ee9e0d07-8387-57b7-b2ff-c4f8c632877d",
+          "vehicle_id": "V000771",
+          "fleet_id": "F065",
+          "timestamp": "2026-09-27T14:28:23.727579Z",
+          "type": "IDLING_ALERT",
+          "start_timestamp": "2026-09-27T14:27:58.727579Z",
+          "duration_seconds": 25.0,
+          "estimated_fuel_l": 0.005555555555555556,
+          "estimated_cost": 0.5555555555555556,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "42f833bf-9c99-59b1-a58a-2c9521569baa",
+          "event_id": "9e2c29b6-d34b-5fe9-9fc1-227e6e3ceb08",
+          "vehicle_id": "V000763",
+          "fleet_id": "F100",
+          "timestamp": "2026-09-27T14:28:23.719579Z",
+          "type": "IDLING_ALERT",
+          "start_timestamp": "2026-09-27T14:27:57.719579Z",
+          "duration_seconds": 26.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "8251afc9-a5c5-5cfa-8788-db9c9c4de845",
+          "event_id": "44b6070a-f7cd-5f62-82f5-852e6f7de4bb",
+          "vehicle_id": "V000761",
+          "fleet_id": "F018",
+          "timestamp": "2026-09-27T14:28:23.717579Z",
+          "type": "SPEEDING",
+          "start_timestamp": "2026-09-27T14:28:02.717579Z",
+          "duration_seconds": 0.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "bb53a91d-5daf-509a-8ca0-98a24aad6dff",
+          "event_id": "1d9068fc-0d67-591e-8ff9-a559e998a52b",
+          "vehicle_id": "V000757",
+          "fleet_id": "F040",
+          "timestamp": "2026-09-27T14:28:23.713579Z",
+          "type": "IDLING_ALERT",
+          "start_timestamp": "2026-09-27T14:27:56.713579Z",
+          "duration_seconds": 27.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "629b0515-043d-5b77-8d94-0395826f9916",
+          "event_id": "53501128-b292-5321-b2a5-fc1407fa6a65",
+          "vehicle_id": "V000754",
+          "fleet_id": "F072",
+          "timestamp": "2026-09-27T14:28:23.710579Z",
+          "type": "IDLING_ALERT",
+          "start_timestamp": "2026-09-27T14:27:58.710579Z",
+          "duration_seconds": 25.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "5077960d-bc3d-5289-bb9c-7ff02b7eee66",
+          "event_id": "b329f107-5ef9-501d-b567-2360b53a93a9",
+          "vehicle_id": "V000750",
+          "fleet_id": "F004",
+          "timestamp": "2026-09-27T14:28:23.706579Z",
+          "type": "LOW_ENERGY",
+          "start_timestamp": "2026-09-27T14:28:04.706579Z",
+          "duration_seconds": 0.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0,
+          "detail": "acceleration_mps2=-0.47"
+        },
+        {
+          "alert_id": "d8824b51-9e79-526e-bfea-22ff35c6dbbc",
+          "event_id": "e3d97aa8-9651-5fc5-8d1d-96dd8ce0eab1",
+          "vehicle_id": "V000748",
+          "fleet_id": "F034",
+          "timestamp": "2026-09-27T14:28:23.704579Z",
+          "type": "IDLING_ALERT",
+          "start_timestamp": "2026-09-27T14:27:55.704579Z",
+          "duration_seconds": 28.0,
+          "estimated_fuel_l": 0.006222222222222223,
+          "estimated_cost": 0.6222222222222222,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "2008dcf0-52a8-527c-bb65-6ef42521fd09",
+          "event_id": "def8ee23-37a3-5983-82a8-332aa4b26ae5",
+          "vehicle_id": "V000744",
+          "fleet_id": "F059",
+          "timestamp": "2026-09-27T14:28:23.700579Z",
+          "type": "IDLING_ALERT",
+          "start_timestamp": "2026-09-27T14:27:55.700579Z",
+          "duration_seconds": 28.0,
+          "estimated_fuel_l": 0.006222222222222223,
+          "estimated_cost": 0.6222222222222222,
+          "detail": "acceleration_mps2=0.00"
+        },
+        {
+          "alert_id": "fc734229-baa0-52a9-a7d7-335078b7a79b",
+          "event_id": "32556e70-255b-5761-bea1-0edf216229ff",
+          "vehicle_id": "V000743",
+          "fleet_id": "F092",
+          "timestamp": "2026-09-27T14:28:23.699579Z",
+          "type": "ENGINE_FAULT",
+          "start_timestamp": "2026-09-27T14:27:52.699579Z",
+          "duration_seconds": 0.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0,
+          "detail": "P0301,P0420"
+        }
+      ],
+      "pagination": {
+        "limit": 50,
+        "offset": 0,
+        "total": 233
+      }
+    }
+  },
+  "/api/v1/analytics/idling": {
+    "status": 200,
+    "body": {
+      "data": [
+        {
+          "vehicle_id": "V000590",
+          "fleet_id": "F040",
+          "duration_seconds": 29.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0
+        },
+        {
+          "vehicle_id": "V000708",
+          "fleet_id": "F060",
+          "duration_seconds": 29.0,
+          "estimated_fuel_l": 0.006444444444444449,
+          "estimated_cost": 0.6444444444444444
+        },
+        {
+          "vehicle_id": "V000533",
+          "fleet_id": "F054",
+          "duration_seconds": 29.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0
+        },
+        {
+          "vehicle_id": "V000100",
+          "fleet_id": "F077",
+          "duration_seconds": 29.0,
+          "estimated_fuel_l": 0.006444444444444449,
+          "estimated_cost": 0.6444444444444444
+        },
+        {
+          "vehicle_id": "V000126",
+          "fleet_id": "F016",
+          "duration_seconds": 28.0,
+          "estimated_fuel_l": 0.006222222222222226,
+          "estimated_cost": 0.6222222222222221
+        },
+        {
+          "vehicle_id": "V000077",
+          "fleet_id": "F026",
+          "duration_seconds": 28.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0
+        },
+        {
+          "vehicle_id": "V000834",
+          "fleet_id": "F062",
+          "duration_seconds": 28.0,
+          "estimated_fuel_l": 0.006222222222222226,
+          "estimated_cost": 0.6222222222222221
+        },
+        {
+          "vehicle_id": "V000619",
+          "fleet_id": "F100",
+          "duration_seconds": 28.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0
+        },
+        {
+          "vehicle_id": "V000205",
+          "fleet_id": "F082",
+          "duration_seconds": 28.0,
+          "estimated_fuel_l": 0.006222222222222226,
+          "estimated_cost": 0.6222222222222221
+        },
+        {
+          "vehicle_id": "V000480",
+          "fleet_id": "F088",
+          "duration_seconds": 28.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0
+        },
+        {
+          "vehicle_id": "V000748",
+          "fleet_id": "F034",
+          "duration_seconds": 28.0,
+          "estimated_fuel_l": 0.006222222222222226,
+          "estimated_cost": 0.6222222222222221
+        },
+        {
+          "vehicle_id": "V000208",
+          "fleet_id": "F003",
+          "duration_seconds": 28.0,
+          "estimated_fuel_l": 0.006222222222222226,
+          "estimated_cost": 0.6222222222222221
+        },
+        {
+          "vehicle_id": "V000547",
+          "fleet_id": "F052",
+          "duration_seconds": 28.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0
+        },
+        {
+          "vehicle_id": "V000522",
+          "fleet_id": "F049",
+          "duration_seconds": 28.0,
+          "estimated_fuel_l": 0.006222222222222226,
+          "estimated_cost": 0.6222222222222221
+        },
+        {
+          "vehicle_id": "V000908",
+          "fleet_id": "F036",
+          "duration_seconds": 28.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0
+        },
+        {
+          "vehicle_id": "V000296",
+          "fleet_id": "F019",
+          "duration_seconds": 28.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0
+        },
+        {
+          "vehicle_id": "V000744",
+          "fleet_id": "F059",
+          "duration_seconds": 28.0,
+          "estimated_fuel_l": 0.006222222222222226,
+          "estimated_cost": 0.6222222222222221
+        },
+        {
+          "vehicle_id": "V000181",
+          "fleet_id": "F038",
+          "duration_seconds": 28.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0
+        },
+        {
+          "vehicle_id": "V000783",
+          "fleet_id": "F066",
+          "duration_seconds": 28.0,
+          "estimated_fuel_l": 0.0,
+          "estimated_cost": 0.0
+        },
+        {
+          "vehicle_id": "V000301",
+          "fleet_id": "F099",
+          "duration_seconds": 28.0,
+          "estimated_fuel_l": 0.006222222222222226,
+          "estimated_cost": 0.6222222222222221
+        }
+      ],
+      "execution": {
+        "route": "queryflux",
+        "engine": "clickhouse",
+        "latency_ms": 117.76
+      },
+      "assumptions": {
+        "idle_fuel_lph": 0.8,
+        "fuel_price_per_litre": 100.0,
+        "currency": "INR",
+        "scope": "top 20 vehicles; sampled continuous idle intervals; ICE fuel only"
+      }
+    }
+  },
+  "/api/v1/analytics/events": {
+    "status": 200,
+    "body": {
+      "data": [
+        {
+          "minute": null,
+          "event_type": "DUPLICATE_EVENT",
+          "events": 461,
+          "average_speed_kmh": 45.14937087615503
+        },
+        {
+          "minute": null,
+          "event_type": "ENGINE_FAULT",
+          "events": 907,
+          "average_speed_kmh": 55.08002197703033
+        },
+        {
+          "minute": null,
+          "event_type": "HARSH_ACCELERATION",
+          "events": 414,
+          "average_speed_kmh": 179.8274878902712
+        },
+        {
+          "minute": null,
+          "event_type": "HARSH_BRAKE",
+          "events": 978,
+          "average_speed_kmh": 0.0
+        },
+        {
+          "minute": null,
+          "event_type": "IDLING",
+          "events": 1997,
+          "average_speed_kmh": 0.0
+        },
+        {
+          "minute": null,
+          "event_type": "LOW_ENERGY",
+          "events": 364,
+          "average_speed_kmh": 59.793873608767335
+        },
+        {
+          "minute": null,
+          "event_type": "NETWORK_RECOVERY_BURST",
+          "events": 6,
+          "average_speed_kmh": 84.08166631062825
+        },
+        {
+          "minute": null,
+          "event_type": "NORMAL",
+          "events": 17518,
+          "average_speed_kmh": 54.923000919014534
+        },
+        {
+          "minute": null,
+          "event_type": "OUT_OF_ORDER_EVENT",
+          "events": 479,
+          "average_speed_kmh": 53.840375725063254
+        },
+        {
+          "minute": null,
+          "event_type": "SPEEDING",
+          "events": 1094,
+          "average_speed_kmh": 111.51905848905852
+        },
+        {
+          "minute": null,
+          "event_type": "DUPLICATE_EVENT",
+          "events": 155,
+          "average_speed_kmh": 45.50922593147524
+        },
+        {
+          "minute": null,
+          "event_type": "ENGINE_FAULT",
+          "events": 298,
+          "average_speed_kmh": 55.42362421791025
+        },
+        {
+          "minute": null,
+          "event_type": "HARSH_ACCELERATION",
+          "events": 137,
+          "average_speed_kmh": 120.2035036574315
+        },
+        {
+          "minute": null,
+          "event_type": "HARSH_BRAKE",
+          "events": 322,
+          "average_speed_kmh": 11.700124189720391
+        },
+        {
+          "minute": null,
+          "event_type": "IDLING",
+          "events": 658,
+          "average_speed_kmh": 16.63639823682493
+        },
+        {
+          "minute": null,
+          "event_type": "LOW_ENERGY",
+          "events": 123,
+          "average_speed_kmh": 58.40747969712668
+        },
+        {
+          "minute": null,
+          "event_type": "NETWORK_RECOVERY_BURST",
+          "events": 137,
+          "average_speed_kmh": 59.12751836846345
+        },
+        {
+          "minute": null,
+          "event_type": "NORMAL",
+          "events": 5522,
+          "average_speed_kmh": 54.87849694341475
+        },
+        {
+          "minute": null,
+          "event_type": "OFFLINE",
+          "events": 128,
+          "average_speed_kmh": 54.864374950528145
+        },
+        {
+          "minute": null,
+          "event_type": "OUT_OF_ORDER_EVENT",
+          "events": 161,
+          "average_speed_kmh": 53.908260843028195
+        },
+        {
+          "minute": null,
+          "event_type": "SPEEDING",
+          "events": 362,
+          "average_speed_kmh": 69.85328744919919
+        }
+      ],
+      "execution": {
+        "route": "queryflux",
+        "engine": "clickhouse",
+        "latency_ms": 26.02
+      }
+    }
+  },
+  "/api/v1/analytics/faults": {
+    "status": 200,
+    "body": {
+      "data": [
+        {
+          "type": "IDLING_ALERT",
+          "incidents": 122
+        },
+        {
+          "type": "SPEEDING",
+          "incidents": 62
+        },
+        {
+          "type": "HARSH_BRAKE",
+          "incidents": 40
+        },
+        {
+          "type": "ENGINE_FAULT",
+          "incidents": 37
+        },
+        {
+          "type": "HARSH_ACCELERATION",
+          "incidents": 17
+        },
+        {
+          "type": "LOW_ENERGY",
+          "incidents": 12
+        }
+      ],
+      "execution": {
+        "route": "queryflux",
+        "engine": "clickhouse",
+        "latency_ms": 11.37
+      }
+    }
+  },
+  "/api/v1/system/metrics": {
+    "status": 200,
+    "body": {
+      "data": {
+        "processor": {
+          "consumed": 33000,
+          "accepted": 32221,
+          "duplicates_ignored": 616,
+          "validation_errors": 163,
+          "late_events": 320,
+          "alerts_generated": 290,
+          "processor_errors": 0,
+          "consumer_lag": 1301,
+          "consumed_per_sec": 1057.3507348750065,
+          "event_latency_ms": 0,
+          "updated_at": 1790519304.1119337
+        },
+        "simulator": {
+          "generated": 32000,
+          "emitted": 32588,
+          "published": 32075,
+          "errors": 0,
+          "backpressure": 0,
+          "generated_per_sec": 998.4242090360866,
+          "updated_at": 1790519303.4897723
+        },
+        "api": {
+          "requests": 8,
+          "errors": 0,
+          "latency_ms_total": 295.1805370007605,
+          "live_queries": 3,
+          "metadata_queries": 3
+        },
+        "analytics_running": 0,
+        "analytics_waiting": 0,
+        "analytics_requests": 3,
+        "analytics_errors": 0,
+        "queryflux_requests": 3
+      }
+    }
+  },
+  "/api/v1/system/routing": {
+    "status": 200,
+    "body": {
+      "data": {
+        "live": "redis",
+        "metadata": "postgresql",
+        "analytics_configured_route": "queryflux",
+        "engine": "clickhouse",
+        "routing_counts": {
+          "direct:clickhouse": 0,
+          "queryflux:clickhouse": 3
+        },
+        "last_successful_execution": {
+          "route": "queryflux",
+          "engine": "clickhouse",
+          "latency_ms": 11.37
+        },
+        "queryflux_verified_in_process": true
+      }
+    }
+  }
+}

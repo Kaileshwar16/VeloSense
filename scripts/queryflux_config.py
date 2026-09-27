@@ -12,9 +12,7 @@ if __name__ == "__main__":
     text = Path("infra/queryflux.yaml").read_text()
     text += (
         "\nauth:\n  provider: static\n  required: true\n  staticUsers:\n"
-        "    users:\n      valeosense:\n        password: "
-        + json.dumps(settings.api_key)
-        + "\n"
+        "    users:\n      valeosense:\n        password: " + json.dumps(settings.api_key) + "\n"
     )
     path = Path("artifacts/queryflux.local.yaml")
     path.parent.mkdir(exist_ok=True)
