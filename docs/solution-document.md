@@ -11,7 +11,7 @@ incidents through a working streaming prototype. A deterministic registry contai
 100,000 synthetic vehicles. Stateful telemetry flows through Kafka-compatible
 Redpanda into a Python processor, Redis live state and ClickHouse history;
 PostgreSQL stores metadata. FastAPI serves a React dashboard, and existing
-QueryFlux software optionally routes analytical reads to ClickHouse.
+QueryFlux software routes analytical reads to ClickHouse and embedded DuckDB in the Compose demo; direct ClickHouse mode remains available. DuckDB reads a bounded recent Parquet sample refreshed from canonical ClickHouse.
 
 The saved short benchmark sustained a 1K readings/sec generation target; the
 10K target exceeded single-processor capacity. Optional Grafana/Prometheus
@@ -100,8 +100,7 @@ Per-hop latency distributions have not been measured.
 
 Kafka provides replay and buffering; Redis supports bounded live reads;
 PostgreSQL enforces fleet/vehicle relationships; ClickHouse serves history. Python
-and Compose keep this prototype operable on one machine. Flink, Kubernetes and
-an embedded analytical engine were not required for the measured scope.
+and Compose keep this prototype operable on one machine. Embedded DuckDB serves small sample queries through an explicit QueryFlux namespace rule. Flink and Kubernetes remain outside the scope.
 
 ### 5.3 Data Architecture
 
@@ -124,8 +123,7 @@ query comparison is recorded; three-query optimization evidence is incomplete.
 
 Deployment is local Docker Compose with one broker, one processor and one replica
 per data service. Published ports bind to loopback. Credentials come from ignored
-local configuration. Optional `queryflux` and `monitoring` profiles extend the
-stack. No cloud portability trial, autoscaling or failover deployment was performed.
+local configuration. The root Compose demo includes both analytical engines and automatic sample initialization. The underlying `queryflux` profile remains optional for direct mode; `monitoring` is always optional. No cloud portability trial, autoscaling or failover deployment was performed.
 
 ## 6. Low-Level Design
 

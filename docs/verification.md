@@ -1,6 +1,6 @@
 # Verification record
 
-Checks below were run locally on 2026-09-27. Saved benchmark evidence is identified
+The original checks below were run locally on 2026-09-27. Browser and monitoring artifacts are refreshed by later runs; their embedded timestamps identify the latest evidence. Saved benchmark evidence is identified
 separately from fresh execution. The original supplied DOCX and untracked
 `artifacts/tests.txt` were preserved.
 
@@ -31,6 +31,45 @@ case; a bounded diagnostic reproduced it. The complete suite subsequently passed
 outside the sandbox. Docker, local network and Chromium checks also required
 execution outside the restricted sandbox. This is not a claim that the sandboxed
 run passed.
+
+## Two-engine completion (2026-09-29 local date)
+
+The runtime clock recorded these checks on 2026-09-28 UTC. The root
+`docker compose up --build -d` started the complete demo with automatic DuckDB
+bootstrap and fresh streamed telemetry; no volumes were cleared. The pinned
+binary reports QueryFlux `0.0.1` and bundled DuckDB `v1.5.1`.
+
+- Python unit/API suite: **92 passed, 2 integration tests skipped** in the host
+  run. The initial sandbox run stalled in async API tests and was interrupted;
+  the successful run was outside the sandbox.
+- Real Compose integration suite: **2 passed**. This covers the existing Kafka
+  ingestion/dedup/history path and exact seeded event-ID lineage through both
+  analytical engines (`make integration-queryflux`).
+- [Stream routing evidence](../artifacts/dual-engine-stream.json): fresh V000001
+  readings returned through the DuckDB API and fleet activity through ClickHouse;
+  native success counters advanced for both engines.
+- [Fixture lineage evidence](../artifacts/dual-engine-lineage.json): three explicitly
+  seeded canonical events found through both gateway routes after snapshot refresh.
+- Failure injection: stopped `duckdb-sync`, waited past the 120-second freshness
+  bound, observed sample HTTP **503**, history HTTP **200**, and an increased API
+  DuckDB error counter. Restarted the worker and verified recovery. No stale result
+  was served as successful data; no automatic fallback was used.
+- Python Ruff check/format, frontend production build, root and direct Compose
+  configuration validation, and running Prometheus configuration check passed.
+- Frontend tests: **3 request tests and 4 Playwright tests passed**. There is no
+  frontend `lint` npm script; an attempted invocation reported that absence.
+- Real Chromium smoke: passed with **Stream connected**, a successful DuckDB panel
+  query, history/pagination, desktop/mobile screenshots and no JavaScript errors
+  ([browser evidence](../artifacts/browser-smoke.json)).
+- Grafana: **18 panels**, all PromQL accepted, exporter scrape up, native QueryFlux
+  scrape up, and successful native observations for **ClickHouse and DuckDb**
+  ([monitoring evidence](../artifacts/monitoring-smoke.json)).
+
+API engine labels identify configured workloads; native QueryFlux counters provide
+independent execution evidence. These checks demonstrate routing and correctness,
+not a speedup or new throughput benchmark. Redis memory retention remains the
+existing sustained-run limit; traffic is stopped after verification. See
+[the run guide](../RUN_PROJECT.md) and [routing details](queryflux.md).
 
 ## Fresh submission audit evidence
 

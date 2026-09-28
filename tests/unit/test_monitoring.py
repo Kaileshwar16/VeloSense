@@ -75,3 +75,20 @@ async def test_scrape_authentication_and_failure_visibility(failure):
         assert "version=0.0.4" in response.headers["content-type"]
         assert "valeosense_api_requests_total 7\n" in response.text
     assert "secret-test-key" not in response.text
+
+
+def test_two_engine_counters_and_duration_units():
+    text = render_metrics(
+        {
+            "engines": {
+                "clickhouse": {"requests": 3, "successes": 3, "errors": 0, "latency_ms_total": 450},
+                "duckdb": {"requests": 2, "successes": 1, "errors": 1, "latency_ms_total": 25},
+            }
+        },
+        {"routing_counts": {"queryflux:clickhouse": 3, "queryflux:duckdb": 2}},
+        now=100,
+    )
+    assert 'valeosense_analytics_engine_errors_total{engine="duckdb"} 1\n' in text
+    assert 'valeosense_analytics_engine_duration_seconds_total{engine="clickhouse"} 0.45\n' in text
+    assert "valeosense_route_queryflux_requests_total 5\n" in text
+    assert text.count("# TYPE valeosense_analytics_engine_errors_total counter") == 1

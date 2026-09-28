@@ -23,7 +23,7 @@ def main():
         dashboard = client.get("/api/dashboards/uid/valeosense-overview")
         dashboard.raise_for_status()
         panels = dashboard.json()["dashboard"]["panels"]
-        assert len(panels) == 14, "dashboard provisioning incomplete"
+        assert len(panels) == 18, "dashboard provisioning incomplete"
         proxy = "/api/datasources/proxy/uid/valeosense-prometheus/api/v1/query"
 
         def query(expression):
@@ -47,6 +47,16 @@ def main():
         for panel in panels:
             for target in panel["targets"]:
                 query(target["expr"].replace("$__rate_interval", "1m"))
+        if os.getenv("EXPECT_QUERYFLUX") == "1":
+            native = query('up{job="queryflux"}')
+            assert native and native[0]["value"][1] == "1", "QueryFlux scrape is down"
+            for engine in ("ClickHouse", "DuckDb"):
+                samples = query(
+                    'sum(queryflux_queries_total{status="Success",engine_type="' + engine + '"})'
+                )
+                assert samples and float(samples[0]["value"][1]) > 0, (
+                    f"No native successful queries for {engine}; run make verify-dual-engine first"
+                )
         evidence = {
             "verified_at": datetime.now(timezone.utc).isoformat(),
             "grafana_version": health.json()["version"],
@@ -61,6 +71,8 @@ def main():
             ],
             "passed": True,
         }
+        if os.getenv("EXPECT_QUERYFLUX") == "1":
+            evidence["checks"].append("native QueryFlux scrape and both engine successes present")
     Path("artifacts/monitoring-smoke.json").write_text(json.dumps(evidence, indent=2) + "\n")
     print(json.dumps(evidence, indent=2))
 

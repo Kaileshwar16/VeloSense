@@ -21,8 +21,7 @@ recreate the backend or change its analytical route. To start everything from
 scratch with live demo traffic and monitoring:
 
 ```bash
-docker compose --env-file .env -f infra/docker-compose.yml \
-  --profile demo --profile monitoring up --build -d
+docker compose --profile monitoring up --build -d
 ```
 
 Monitoring is disabled by default. `make monitoring-down` stops only Grafana,
@@ -35,6 +34,7 @@ preserves their volumes. Initial startup downloads the two monitoring images.
 flowchart LR
   API[Existing authenticated JSON metrics API] --> Exporter[Optional Python exporter]
   Exporter -->|Prometheus text format, every 10s| Prometheus
+  QueryFlux[Native engine counters and latency] --> Prometheus
   Prometheus --> Grafana
 ```
 
@@ -66,6 +66,13 @@ Prometheus retains up to seven days or 512 MB of samples (whichever limit is
 reached first; disk use also includes WAL/head overhead). Grafana settings and
 Prometheus history live in named volumes. This adds local metrics visualization,
 not distributed tracing, host/container exporters, or notification delivery.
+
+Four additional panels (18 total) use native QueryFlux counters by `engine_type`,
+mean query latency, native failures, and API failures by configured workload engine.
+In direct mode the QueryFlux scrape can be down because that service is optional.
+Native counters include non-API verification queries. To require both engines in
+the smoke check, first run `make verify-dual-engine`, then
+`EXPECT_QUERYFLUX=1 make monitoring-test`.
 
 ## Verification and troubleshooting
 

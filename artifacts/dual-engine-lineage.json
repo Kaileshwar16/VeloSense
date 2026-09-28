@@ -1,0 +1,54 @@
+{
+  "verified_at": "2026-09-28T18:48:39.460897+00:00",
+  "seeded_event_ids": [
+    "6d834eb1-68a9-5870-98a6-57ba643b494e",
+    "65cc0d4a-3c25-5699-9be6-c1ff6b6f9f26",
+    "45151d01-9b15-565b-a019-8f0f11b0b41f"
+  ],
+  "seed_path": "generator -> detector -> canonical ClickHouse -> snapshot -> DuckDB",
+  "light": {
+    "data": [
+      {
+        "vehicle_id": "V000100",
+        "readings": 207,
+        "average_speed_kmh": 104.25647330168941,
+        "first_seen": "2026-09-28 18:45:16.991",
+        "last_seen": "2026-09-28 18:48:36.991"
+      }
+    ],
+    "execution": {
+      "route": "queryflux",
+      "engine": "duckdb",
+      "workload": "recent_sample",
+      "latency_ms": 21.17
+    },
+    "scope": {
+      "kind": "bounded_recent_sample",
+      "requested_minutes": 15,
+      "window_minutes": 120,
+      "vehicle_limit": 100,
+      "row_limit": 20000,
+      "snapshot_epoch": 1790621318.1698472,
+      "max_age_seconds": 120,
+      "complete_history": false
+    }
+  },
+  "heavy_execution": {
+    "route": "queryflux",
+    "engine": "clickhouse",
+    "workload": "historical",
+    "latency_ms": 157.25
+  },
+  "native_success_count_delta": {
+    "ClickHouse": 2.0,
+    "DuckDb": 31.0
+  },
+  "checks": [
+    "real API -> QueryFlux -> DuckDB",
+    "real API -> QueryFlux -> ClickHouse",
+    "native per-engine counters advanced",
+    "bounded snapshot scope disclosed",
+    "exact seeded event IDs found through both QueryFlux routes"
+  ],
+  "passed": true
+}

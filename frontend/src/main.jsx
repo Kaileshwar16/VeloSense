@@ -19,6 +19,46 @@ function Empty({ failed, loading, children }) {
 function PanelHeading({ title, subtitle, children }) {
   return <div className="panel-heading"><div><h2>{title}</h2><p>{subtitle}</p></div>{children}</div>;
 }
+function RecentAnalytics({ apiKey, enabled }) {
+  const [ids, setIds] = useState('V000001,V000002');
+  const [minutes, setMinutes] = useState(15);
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+  const pending = useRef(null);
+  useEffect(() => () => pending.current?.abort(), []);
+  async function run(event) {
+    event.preventDefault();
+    pending.current?.abort();
+    const controller = new AbortController();
+    pending.current = controller;
+    setBusy(true); setResult(null); setError('');
+    try {
+      const params = new URLSearchParams({ vehicle_ids: ids.trim(), minutes });
+      const data = await request(`/api/v1/analytics/recent?${params}`, apiKey, { signal: controller.signal });
+      if (!controller.signal.aborted) setResult(data);
+    } catch (error) {
+      if (!controller.signal.aborted) setError(error.message);
+    } finally {
+      if (!controller.signal.aborted) setBusy(false);
+    }
+  }
+  return <section className="panel recent-panel" aria-label="Recent sample analytics">
+    <PanelHeading title="A closer look" subtitle="Small vehicle selections · bounded recent telemetry"><span className="badge lavender">DUCKDB</span></PanelHeading>
+    <form className="recent-form" onSubmit={run}>
+      <label>Vehicle IDs<input value={ids} onChange={e => setIds(e.target.value)} pattern="V[0-9]{6}(,V[0-9]{6}){0,7}" required aria-label="Sample vehicle IDs"/></label>
+      <label>Last minutes<input type="number" min="1" max="60" value={minutes} onChange={e => setMinutes(e.target.value)} required aria-label="Sample time window"/></label>
+      <button disabled={!enabled || busy}>{busy ? 'Querying…' : 'Analyse sample ↗'}</button>
+    </form>
+    {!enabled && <p className="panel-note">Available in the QueryFlux demo. Historical analytics remain available above.</p>}
+    {error && <div className="error" role="alert">{error}</div>}
+    {result && <>
+      <div className="table-scroll" tabIndex={0} role="region" aria-label="Sample analytical results"><table><thead><tr><th>Vehicle</th><th>Readings</th><th>Average speed</th><th>Last seen (UTC)</th></tr></thead><tbody>{result.data.map(row => <tr key={row.vehicle_id}><td>{row.vehicle_id}</td><td>{number(row.readings)}</td><td>{number(row.average_speed_kmh, 1)} km/h</td><td>{row.last_seen}</td></tr>)}</tbody></table></div>
+      {!result.data.length && <Empty>No readings for this selection in the current sample.</Empty>}
+      <p className="panel-note">{result.execution && <>QueryFlux → {result.execution.engine} · {result.execution.latency_ms} ms · </>}Snapshot {time(new Date(result.scope.snapshot_epoch * 1000))}. Up to {number(result.scope.row_limit)} recent readings from the first {number(result.scope.vehicle_limit)} vehicles over {result.scope.window_minutes} minutes. This sample is not complete vehicle history.</p>
+    </>}
+  </section>;
+}
 function History({ vehicle, apiKey, close }) {
   const dialog = useRef(null);
   const [history, setHistory] = useState(null);
@@ -157,7 +197,8 @@ function App() {
         <div className="section-label"><span>02 / THE BIGGER PICTURE</span><span>TURN SIGNALS INTO INSIGHT ↘</span></div>
         <div className="analytics-grid" id="analytics"><section className="panel"><PanelHeading title="Telemetry activity" subtitle="Events per minute · latest 240 time/type groups"><span className="badge lavender">LAST 24H</span></PanelHeading><div className="chart" aria-label="Events per minute">{chart.length ? chart.map(([minute, n]) => <div className="bar-column" key={minute} title={`${minute}: ${n} events`}><span>{number(n)}</span><div style={{ height: `${Math.max(3, n / max * 125)}px` }}/><small>{time(minute).slice(0, 5)}</small></div>) : <Empty {...emptyProps('events')}>Your activity takes shape after the first processor batch.</Empty>}</div><div className="legend">{Object.entries(distribution).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([name, n]) => <span key={name}><i/>{label(name)} <b>{number(n)}</b></span>)}</div></section>
           <section className="panel"><PanelHeading title="Idling insights" subtitle="Top vehicles · last 7 days"><span className="badge yellow">ICE + EV</span></PanelHeading>{idle.slice(0, 5).map((row, i) => <div className="idle-row" key={row.vehicle_id}><span className="rank">0{i + 1}</span><div><button className="vehicle-id" onClick={() => setSelected(row.vehicle_id)}>{row.vehicle_id}</button><small>{row.fleet_id}</small></div><span>{number(row.duration_seconds / 60, 1)} <small className="inline">min</small></span><b>₹{number(row.estimated_cost, 2)}</b></div>)}{!idle.length && <Empty {...emptyProps('idling')}>Less idle time. More road time. Continuous idle readings appear here.</Empty>}<div className="panel-note">Estimate: {state.idling?.assumptions?.idle_fuel_lph ?? '—'} L/h at ₹{state.idling?.assumptions?.fuel_price_per_litre ?? '—'}/L. EV fuel cost excluded.</div></section></div>
-        <section className="infrastructure" id="infrastructure"><div><div className="eyebrow">03 / UNDER THE HOOD</div><h2>The right store.<br/>For every signal<span>↗</span></h2><p>Live state stays responsive while analytics does the heavy lifting.</p><div className="route-chips"><span>LIVE <b>Redis</b></span><span>METADATA <b>PostgreSQL</b></span><span>ANALYTICS <b>{route?.analytics_configured_route === 'queryflux' ? 'QueryFlux → ClickHouse' : route?.analytics_configured_route === 'direct' ? 'ClickHouse direct' : 'Unavailable'}</b></span></div><div className="query-counters" aria-label="Query counters"><span>Live queries <b>{metrics ? number(metrics.api.live_queries) : '—'}</b></span><span>Metadata queries <b>{metrics ? number(metrics.api.metadata_queries) : '—'}</b></span><span>Analytics queries <b>{metrics ? number(metrics.analytics_requests) : '—'}</b></span></div></div><div className="query-card"><div className="query-title"><span>ANALYTICAL QUERY</span><span aria-hidden="true">↗</span></div><strong>7-day fleet idling</strong><div><span>Route</span><b>{execution?.route ?? 'Not yet verified'}</b></div><div><span>Engine</span><b>{execution?.engine ?? '—'}</b></div><div><span>Latency</span><b>{execution ? `${execution.latency_ms} ms` : '—'}</b></div><small>Response metadata · Available in debug mode</small></div></section>
+        <RecentAnalytics key={key} apiKey={key} enabled={route?.analytics_configured_route === 'queryflux'}/>
+        <section className="infrastructure" id="infrastructure"><div><div className="eyebrow">03 / UNDER THE HOOD</div><h2>The right store.<br/>For every signal<span>↗</span></h2><p>Live state stays responsive while analytics does the heavy lifting.</p><div className="route-chips"><span>LIVE <b>Redis</b></span><span>METADATA <b>PostgreSQL</b></span><span>ANALYTICS <b>{route?.analytics_configured_route === 'queryflux' ? 'QueryFlux → ClickHouse + DuckDB' : route?.analytics_configured_route === 'direct' ? 'ClickHouse direct' : 'Unavailable'}</b></span></div><div className="query-counters" aria-label="Query counters"><span>Live queries <b>{metrics ? number(metrics.api.live_queries) : '—'}</b></span><span>Metadata queries <b>{metrics ? number(metrics.api.metadata_queries) : '—'}</b></span><span>Analytics queries <b>{metrics ? number(metrics.analytics_requests) : '—'}</b></span></div></div><div className="query-card"><div className="query-title"><span>ANALYTICAL QUERY</span><span aria-hidden="true">↗</span></div><strong>7-day fleet idling</strong><div><span>Route</span><b>{execution?.route ?? 'Not yet verified'}</b></div><div><span>Engine</span><b>{execution?.engine ?? '—'}</b></div><div><span>Latency</span><b>{execution ? `${execution.latency_ms} ms` : '—'}</b></div><small>Response metadata · Available in debug mode</small></div></section>
         <section className="health-strip"><strong><i className={`dot ${state.health?.status === 'ok' ? '' : 'gray'}`}/>System health</strong><span>Data services <b>{state.health?.status ?? 'unavailable'}</b></span><span>Consumer lag <b>{freshProcessor && processor.consumer_lag != null ? number(processor.consumer_lag) : '—'}</b></span><span>Duplicates ignored <b>{freshProcessor ? number(processor.duplicates_ignored) : '—'}</b></span><span>Processor errors <b>{freshProcessor ? number(processor.processor_errors) : '—'}</b></span><span>QueryFlux requests <b>{metrics ? number(metrics.queryflux_requests) : '—'}</b></span></section>
         <footer><strong>ValeoSense<span>↗</span></strong><span>EVERY SIGNAL COUNTS.</span><span>Synthetic telemetry · Hackathon prototype</span></footer>
       </div>

@@ -28,6 +28,13 @@ try {
     element => element.textContent.includes('Connecting to your fleet'),
   ), null, { timeout: 45000 });
   assert.equal(await page.locator('.error').count(), 0, 'dashboard reported a failing service');
+  const dualEngine = process.env.EXPECT_QUERYFLUX === '1';
+  if (dualEngine) {
+    await page.getByRole('button', { name: 'Analyse sample' }).click();
+    await page.locator('.recent-panel tbody tr').first().waitFor();
+    assert.match(await page.locator('.recent-panel .panel-note').innerText(), /QueryFlux → duckdb/);
+    assert.equal(await page.locator('.recent-panel .error').count(), 0);
+  }
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({ path: '../artifacts/dashboard-desktop.png', fullPage: true });
   await page.setViewportSize({ width: 390, height: 844 });
@@ -41,6 +48,7 @@ try {
       'no failing data panel', 'no JavaScript errors', 'no mobile page overflow', 'desktop and mobile screenshots'],
     stream_status: await page.locator('.status-pill').innerText(),
     passed: true };
+  if (dualEngine) evidence.checks.push('real QueryFlux DuckDB sample query and scope disclosure');
   await writeFile('../artifacts/browser-smoke.json', JSON.stringify(evidence, null, 2));
   console.log(JSON.stringify(evidence, null, 2));
 } finally {

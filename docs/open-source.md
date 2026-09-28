@@ -6,7 +6,7 @@ License checks were made against installed package license files, the local Quer
 
 | Component | Use | Confirmed license / evidence |
 |---|---|---|
-| [QueryFlux](https://github.com/lakeops-org/queryflux) | External analytical query router, Trino HTTP -> native ClickHouse | Apache-2.0; local upstream LICENSE at inspected checkout `5d06d83c7552208eff09a7bbfae4c57944338030`, version file `0.3.0` |
+| [QueryFlux](https://github.com/lakeops-org/queryflux) | External analytical query router, Trino HTTP -> native ClickHouse and bundled embedded DuckDB | Apache-2.0; local upstream LICENSE at inspected checkout `5d06d83c7552208eff09a7bbfae4c57944338030`, version file `0.3.0` |
 | Redpanda v25.1.9 | Kafka-compatible streaming broker | BSL-1.1 source-available; [versioned license](https://github.com/redpanda-data/redpanda/blob/v25.1.9/licenses/bsl.md) |
 | Redis server 7.4 | Latest state, dedup and active alerts | RSALv2 or SSPLv1; [7.4 license](https://github.com/redis/redis/blob/7.4.0/LICENSE.txt); do not confuse with redis-py's license |
 | PostgreSQL 17 | Relational metadata | PostgreSQL license; [upstream COPYRIGHT](https://raw.githubusercontent.com/postgres/postgres/REL_17_STABLE/COPYRIGHT) |

@@ -1,0 +1,13 @@
+# Overlay used by the root one-command demo; the existing direct-mode file remains usable.
+services:
+  queryflux:
+    profiles: !reset []
+  duckdb-sync:
+    profiles: !reset []
+  simulator:
+    profiles: !reset []
+  backend:
+    environment:
+      ANALYTICS_ROUTE: queryflux
+    depends_on:
+      queryflux: {condition: service_healthy}

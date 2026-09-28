@@ -53,6 +53,15 @@ class Settings:
         default_factory=lambda: int(os.getenv("MAX_ANALYTICAL_QUERIES", "4"))
     )
     topic: str = "valeosense.telemetry.v1"
+    duckdb_vehicle_limit: int = field(
+        default_factory=lambda: int(os.getenv("DUCKDB_VEHICLE_LIMIT", "100"))
+    )
+    duckdb_window_minutes: int = field(
+        default_factory=lambda: int(os.getenv("DUCKDB_WINDOW_MINUTES", "120"))
+    )
+    duckdb_max_age_seconds: int = field(
+        default_factory=lambda: int(os.getenv("DUCKDB_MAX_AGE_SECONDS", "120"))
+    )
 
     def __post_init__(self):
         positive = (self.idling_seconds, self.speeding_kmh, self.accel_mps2)
@@ -62,3 +71,9 @@ class Settings:
             raise ValueError("braking threshold must be finite and negative")
         if self.max_analytics < 1:
             raise ValueError("MAX_ANALYTICAL_QUERIES must be positive")
+        if not 1 <= self.duckdb_vehicle_limit <= 1000:
+            raise ValueError("DUCKDB_VEHICLE_LIMIT must be between 1 and 1000")
+        if not 1 <= self.duckdb_window_minutes <= 1440:
+            raise ValueError("DUCKDB_WINDOW_MINUTES must be between 1 and 1440")
+        if not 1 <= self.duckdb_max_age_seconds <= 600:
+            raise ValueError("DUCKDB_MAX_AGE_SECONDS must be between 1 and 600")

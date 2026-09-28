@@ -2,7 +2,7 @@
 
 **Real-time intelligence for massive connected-vehicle streams.**
 
-A working hackathon streaming platform: 100,000 deterministic synthetic vehicles, stateful Kafka telemetry, Redis live state, ClickHouse history, PostgreSQL metadata, a FastAPI API, and a React dashboard. The existing **QueryFlux** project routes analytical SQL to ClickHouse; it is an external dependency, not software rebuilt for this submission.
+A working hackathon streaming platform: 100,000 deterministic synthetic vehicles, stateful Kafka telemetry, Redis live state, ClickHouse history, PostgreSQL metadata, a FastAPI API, and a React dashboard. The existing **QueryFlux** project routes analytical SQL to ClickHouse and embedded DuckDB; it is an external dependency, not software rebuilt for this submission.
 
 ## Problem
 
@@ -26,28 +26,31 @@ flowchart LR
   FastAPI -->|live| Redis
   FastAPI -->|metadata SQL| PostgreSQL
   FastAPI -->|Trino HTTP analytical SELECT| QueryFlux
-  QueryFlux -->|native HTTP / Arrow| ClickHouse
+  QueryFlux -->|historical / fleet-wide| ClickHouse
+  QueryFlux -->|bounded sample| DuckDB
+  ClickHouse -->|periodic bounded export| Parquet
+  DuckDB -->|read local snapshot| Parquet
   FastAPI -.->|explicit direct mode| ClickHouse
 ```
 
-[Submission checklist](docs/submission-checklist.md) · [Detailed architecture](docs/architecture.md) · [ER diagram](docs/er-diagram.mmd) · [ADRs](docs/adr) · [Solution document](docs/solution-document.md)
+[Run the demo](RUN_PROJECT.md) · [Submission checklist](docs/submission-checklist.md) · [Detailed architecture](docs/architecture.md) · [ER diagram](docs/er-diagram.mmd) · [ADRs](docs/adr) · [Solution document](docs/solution-document.md)
 
 ## Why not one database?
 
-PostgreSQL enforces metadata relationships without raw event writes. Redis serves small live-state reads. ClickHouse batches append-oriented history and prunes historical lookups by vehicle/time. Kafka absorbs temporary producer/consumer mismatches. This improves separation of concerns, while adding operational and cross-sink consistency costs that the documentation explicitly acknowledges.
+PostgreSQL enforces metadata relationships without raw event writes. Redis serves small live-state reads. ClickHouse batches append-oriented history and prunes historical lookups by vehicle/time. DuckDB serves small selections from a bounded local Parquet snapshot through QueryFlux. Redis/PostgreSQL are persistence services, while ClickHouse and DuckDB are the analytical execution engines. Kafka absorbs temporary producer/consumer mismatches. This improves separation of concerns, while adding operational and cross-sink consistency costs that the documentation explicitly acknowledges.
 
 ## Technology stack
 
-Python 3.11+, FastAPI, Pydantic, confluent-kafka, Redpanda, Redis, PostgreSQL, ClickHouse, existing QueryFlux, React, Vite, Docker Compose, pytest, Ruff, and Playwright/Chromium. Python and frontend dependencies are locked. Major dependency license declarations are in [open-source.md](docs/open-source.md).
+Python 3.11+, FastAPI, Pydantic, confluent-kafka, Redpanda, Redis, PostgreSQL, ClickHouse, existing QueryFlux, embedded DuckDB, React, Vite, Docker Compose, pytest, Ruff, and Playwright/Chromium. Python and frontend dependencies are locked. Major dependency license declarations are in [open-source.md](docs/open-source.md).
 
 ## Quick start
 
-Prerequisites: Python 3.11+, Node 22+, Docker with Compose, and enough free RAM/disk for local services. Initial setup downloads dependencies and images.
+Prerequisites: Python 3.11+, Node 22+, Docker with Compose 2.24+, and enough free RAM/disk for local services. Initial setup downloads dependencies and images.
 
 ```bash
 make setup                 # creates .env once with random local credentials
-make up                    # docker compose up --build -d; seeds metadata automatically
-make simulator             # 100K registered, 1K actively reporting, ~1K generated readings/sec
+docker compose up --build -d  # both analytical engines, metadata seed and simulator
+make verify-dual-engine       # real queries and native engine-counter checks
 ```
 
 Open **http://localhost:3000**. Enter the `API_KEY` from your local `.env`; do not expose it in recordings. The backend is at http://localhost:8000 and interactive API schema at http://localhost:8000/docs. Published core service ports are bound to loopback. API key authentication protects `/api/v1/*`.
@@ -66,7 +69,7 @@ regressions and Chromium dashboard checks with synthetic test fixtures; it requi
 an installed Chromium (`CHROMIUM_PATH` overrides `/usr/bin/chromium`). `make browser-test`
 separately checks the real running stack and saves desktop/mobile screenshots.
 
-For a containerized continuous simulator, use `make demo` instead of `make up` + `make simulator`. It starts safe demo load, not a benchmark. Do not run both simulators simultaneously when measuring performance.
+The root Compose command already starts a simulator. The original direct-mode choices remain `make up` + `make simulator`, or `ANALYTICS_ROUTE=direct make demo`. It starts safe demo load, not a benchmark. Do not run both simulators simultaneously when measuring performance.
 
 For the same continuous demo with QueryFlux-backed analytics, use
 `make demo-queryflux` after setup. Stop its simulator before running a benchmark:
@@ -75,12 +78,12 @@ For the same continuous demo with QueryFlux-backed analytics, use
 Optional monitoring: after starting the application, run `make monitoring` and open
 [Grafana at localhost:3001](http://localhost:3001/d/valeosense-overview). Log in as
 `admin` with your local `API_KEY` (or set `GRAFANA_ADMIN_PASSWORD` before first start).
-Prometheus and a 14-panel pipeline/routing dashboard are provisioned automatically.
+Prometheus and a 18-panel pipeline/routing dashboard are provisioned automatically.
 Use `make monitoring-test` to verify real scrapes and `make monitoring-down` to stop
 only monitoring. The default stack does not start these services. [Monitoring guide](docs/monitoring.md).
 
 ```bash
-# Equivalent core command:
+# Original direct-mode core command (no simulator):
 docker compose --env-file .env -f infra/docker-compose.yml up --build -d
 # Stop without deleting persistent volumes:
 make down
@@ -117,11 +120,11 @@ The committed CSV contains synthetic IDs, 17-character synthetic VINs, fleet, OE
 
 ## QueryFlux integration
 
-**Native integration is verified:** FastAPI -> authenticated Trino HTTP -> existing QueryFlux -> native ClickHouse -> real persisted history. Only **ClickHouse** is connected; no Redis, PostgreSQL analytical routing, DuckDB, Trino backend, multi-engine failover, or routing benchmark is claimed.
+**Two real engines:** FastAPI → authenticated Trino HTTP → QueryFlux → ClickHouse or DuckDB. The sample namespace matches an ordered SQL-regex rule for DuckDB; unmatched historical/fleet SQL routes to ClickHouse. This is explicit routing, not automatic cost or size estimation. Redis and PostgreSQL remain direct API dependencies.
 
-The previously inspected native checkout is `/home/kailesh/work/queryflux`, commit `5d06d83c7552208eff09a7bbfae4c57944338030`, version file `0.3.0`. `scripts/run_queryflux.sh` starts that existing build without modifying upstream. For the verified container route, run `make up-queryflux`: the optional profile uses a digest-pinned upstream image and generated static authentication. The core `make up` command defaults to `ANALYTICS_ROUTE=direct`. See [queryflux.md](docs/queryflux.md) for deployment details and verification commands.
+ClickHouse retains canonical ingestion and history. A worker exports up to 20,000 recent readings from the first 100 vehicles to an atomic Parquet snapshot every 30 seconds. Embedded DuckDB reads that snapshot. The API discloses its bounds and rejects snapshots older than 120 seconds. These settings are configurable in `.env`.
 
-No automatic silent fallback: a configured QueryFlux outage returns 503. Debug responses include the actual successful route, configured engine, and measured wall latency. Read views encapsulate ClickHouse FINAL, and explicit timestamp serialization avoids a tested wire-format issue.
+No automatic silent fallback: a configured QueryFlux outage returns 503. Debug engine labels describe the configured workload; independent QueryFlux native metrics prove the executing engine. See [queryflux.md](docs/queryflux.md) for exact rules, SQL examples, data ownership, version limitations and verification commands.
 
 ## Run the demo
 
@@ -141,6 +144,7 @@ Every `/api/v1/*` endpoint requires `X-API-Key`. No arbitrary SQL endpoint is ex
 | GET `/api/v1/vehicles/{vehicle_id}/history?days=1&limit=100` | Historical readings |
 | GET `/api/v1/alerts?limit=50&offset=0` | Currently active incidents |
 | GET `/api/v1/analytics/idling?days=7&fleet_id=F001` | Top 20 idle vehicles, duration and explicit ICE cost assumptions |
+| GET `/api/v1/analytics/recent?vehicle_ids=V000001,V000002&minutes=15` | Bounded DuckDB sample, at most eight vehicles, with freshness and scope |
 | GET `/api/v1/analytics/events?days=1` | Recent minute/scenario groups, counts and mean speed |
 | GET `/api/v1/analytics/faults?days=7` | Detected incident counts, including faults, braking and speeding |
 | GET `/api/v1/system/metrics` | Process counters, heartbeat, lag, API and analytics metrics |
@@ -154,8 +158,9 @@ Identifiers and bounds are validated; errors use `{"error":{"code":422,"message"
 make lint
 .venv/bin/pytest -q                    # deterministic unit/API suite; external integration visibly skips
 RUN_INTEGRATION=1 .venv/bin/pytest -q  # requires running real stack; unavailable dependencies fail
-# When the backend is configured to use QueryFlux:
-RUN_INTEGRATION=1 EXPECT_QUERYFLUX=1 .venv/bin/pytest -q
+# Both routed engines; executes on the Compose network:
+make integration-queryflux
+make verify-dual-engine
 make frontend-build
 make browser-test                    # actual dashboard, existing /usr/bin/chromium
 ```
@@ -189,13 +194,13 @@ The latest measured run sustained a 1K target: 999.87 generated readings/sec. Th
 - `alert_rules` schema exists, but rules currently come from environment/application settings.
 - Invalid payloads are counted and skipped; a durable dead-letter queue is deferred.
 - Out-of-order history is retained, but late readings do not retroactively repair detector windows.
-- One analytical engine is connected to QueryFlux. Native build portability depends on upstream binary/libraries; container status is documented separately.
+- DuckDB data is bounded and periodically refreshed, not complete history. Routing is by sample namespace, not automatic query-size detection. The legacy native launcher remains ClickHouse-only.
 - UI waste is a labelled top-20 ICE estimate, not measured fuel spend or a complete fleet invoice.
 - No result cache, WebSockets, or real owner/driver information.
 
 ## Future work
 
-Partition-owned consumer state, replay-safe multi-sink checkpointing, durable invalid-event storage, OAuth2/OIDC + JWT + RBAC + tenant isolation, authenticated service links, Parquet archive to S3/MinIO, then Iceberg for schema evolution/snapshots/time travel. Monitoring notifications/distributed tracing, multi-engine routing, cloud deployment, Kubernetes/Terraform, and predictive-maintenance ML are deferred. Prometheus/Grafana dashboards are available through the optional monitoring profile. **No ML model is required for the current solution.**
+Partition-owned consumer state, replay-safe multi-sink checkpointing, durable invalid-event storage, OAuth2/OIDC + JWT + RBAC + tenant isolation, authenticated service links, Parquet archive to S3/MinIO, then Iceberg for schema evolution/snapshots/time travel. Monitoring notifications/distributed tracing, automatic cost-based routing, cloud deployment, Kubernetes/Terraform, and predictive-maintenance ML are deferred. Prometheus/Grafana dashboards are available through the optional monitoring profile. **No ML model is required for the current solution.**
 
 ## Open-source components and declarations
 

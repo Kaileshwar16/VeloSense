@@ -303,3 +303,13 @@ footer>span:last-child { margin-left: auto; }
   .error p { overflow-wrap: anywhere; }
   .modal .error { margin: 14px; }
 }
+
+.recent-panel { margin-top: 26px; }
+.recent-form { display: flex; align-items: flex-end; gap: 16px; padding: 0 20px 20px; flex-wrap: wrap; }
+.recent-form label { display: flex; flex-direction: column; gap: 8px; font-size: 11px; font-weight: 700; }
+.recent-form label:first-child { flex: 1; min-width: 180px; }
+.recent-form input { background: var(--paper); border: var(--border); border-radius: 0; padding: 10px; width: 100%; }
+.recent-form input[type=number] { width: 95px; }
+.recent-form button { background: var(--lavender); box-shadow: 3px 3px 0 var(--ink); }
+.recent-panel>.error { margin: 0 20px 20px; }
+@media (max-width: 520px) { .recent-form { padding: 0 13px 17px; gap: 12px; } }

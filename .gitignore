@@ -14,3 +14,4 @@ artifacts/*.jsonl
 .DS_Store
 artifacts/queryflux.local.yaml
 artifacts/queryflux.compose.yaml
+artifacts/duckdb/

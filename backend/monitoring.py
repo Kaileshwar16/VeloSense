@@ -16,13 +16,16 @@ from shared.config import Settings
 def render_metrics(metrics: dict, routing: dict, now: float) -> str:
     lines = []
 
-    def emit(name, value, kind="gauge", help_text=None):
+    emitted = set()
+
+    def emit(name, value, kind="gauge", help_text=None, labels=""):
         if not isinstance(value, (int, float)) or not math.isfinite(value):
             return
         name = "valeosense_" + name
-        lines.extend(
-            [f"# HELP {name} {help_text or name}", f"# TYPE {name} {kind}", f"{name} {value}"]
-        )
+        if name not in emitted:
+            lines.extend([f"# HELP {name} {help_text or name}", f"# TYPE {name} {kind}"])
+            emitted.add(name)
+        lines.append(f"{name}{labels} {value}")
 
     for source in ("processor", "simulator"):
         data = metrics.get(source) or {}
@@ -71,9 +74,22 @@ def render_metrics(metrics: dict, routing: dict, now: float) -> str:
         emit("analytics_request_duration_seconds_total", latency / 1000, "counter")
     counts = routing.get("routing_counts") or {}
     for route in ("direct", "queryflux"):
-        emit(f"route_{route}_requests_total", counts.get(f"{route}:clickhouse"), "counter")
+        values = [counts.get(f"{route}:{engine}", 0) for engine in ("clickhouse", "duckdb")]
+        emit(f"route_{route}_requests_total", sum(values), "counter")
         emit(f"route_{route}_configured", int(routing.get("analytics_configured_route") == route))
     emit("queryflux_verified", int(routing.get("queryflux_verified_in_process") is True))
+    for engine in ("clickhouse", "duckdb"):
+        observation = (metrics.get("engines") or {}).get(engine) or {}
+        labels = f'{{engine="{engine}"}}'
+        for field in ("requests", "successes", "errors"):
+            emit(
+                f"analytics_engine_{field}_total", observation.get(field), "counter", labels=labels
+            )
+        latency = observation.get("latency_ms_total")
+        if isinstance(latency, (float, int)):
+            emit(
+                "analytics_engine_duration_seconds_total", latency / 1000, "counter", labels=labels
+            )
     return "\n".join(lines) + "\n"
 
 

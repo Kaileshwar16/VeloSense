@@ -9,9 +9,13 @@ flowchart LR
     API -->|Redis protocol| Redis
     API -->|Parameterized SQL| PG
     API -->|"Trino HTTP · analytical SELECT"| QF["QueryFlux\nexternal open-source component"]
-    QF -->|"HTTP / Arrow"| CH
+    QF -->|"history / fleet SQL"| CH
+    QF -->|"sample namespace rule"| DuckDB["Embedded DuckDB"]
+    CH -->|"bounded export every 30 seconds"| Sample["Atomic local Parquet snapshot"]
+    DuckDB -->|"reads view over snapshot"| Sample
     API -.->|"HTTP SQL · explicit direct mode"| CH
     CH -.->|"Future only · export"| Cold["COLD · Parquet / S3\nnot implemented"]
     Exporter["Optional metrics exporter"] -->|"Authenticated HTTP metrics reads"| API
     Prom["Optional Prometheus"] -->|"HTTP scrape every 10s"| Exporter
+    Prom -->|"native engine metrics"| QF
     Grafana["Optional Grafana"] -->|"HTTP PromQL"| Prom

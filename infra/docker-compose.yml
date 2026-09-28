@@ -1,4 +1,9 @@
 name: valeosense
+x-queryflux-runtime: &queryflux-runtime
+  image: valeosense-queryflux-dual
+  build:
+    context: ..
+    dockerfile: infra/queryflux.Dockerfile
 x-app: &app
   build:
     context: ..
@@ -59,17 +64,45 @@ services:
       interval: 5s
       timeout: 3s
       retries: 30
+  duckdb-sync:
+    <<: *queryflux-runtime
+    entrypoint: [/usr/bin/tini, --, /opt/venv/bin/python, /opt/valeosense/duckdb_snapshot.py]
+    command: [sync]
+    environment:
+      CLICKHOUSE_URL: http://clickhouse:8123
+      DUCKDB_WINDOW_MINUTES: ${DUCKDB_WINDOW_MINUTES:-120}
+      DUCKDB_VEHICLE_LIMIT: ${DUCKDB_VEHICLE_LIMIT:-100}
+      DUCKDB_ROW_LIMIT: ${DUCKDB_ROW_LIMIT:-20000}
+      DUCKDB_SYNC_SECONDS: ${DUCKDB_SYNC_SECONDS:-30}
+      DUCKDB_MAX_AGE_SECONDS: ${DUCKDB_MAX_AGE_SECONDS:-120}
+    volumes: ["duckdb:/data"]
+    depends_on:
+      seed: {condition: service_completed_successfully}
+    healthcheck:
+      test: [CMD, /opt/venv/bin/python, /opt/valeosense/duckdb_snapshot.py, health]
+      interval: 10s
+      timeout: 3s
+      retries: 12
+    restart: unless-stopped
+    profiles: [queryflux]
   queryflux:
-    image: ghcr.io/lakeops-org/queryflux@sha256:1da899cddf3c95c41ac074d8dd6f3de59dd10050abc344fdd19528e874b4f2e3
-    entrypoint: [/usr/bin/tini, --, /app/queryflux]
-    command: [--config, /etc/queryflux/config.yaml]
+    <<: *queryflux-runtime
+    entrypoint: [/usr/bin/tini, --, sh, -c]
+    command:
+      - >-
+        /opt/venv/bin/python /opt/valeosense/queryflux_config.py --compose
+        --template /opt/valeosense/queryflux.yaml --output /tmp/queryflux.yaml &&
+        /opt/venv/bin/python /opt/valeosense/duckdb_snapshot.py bootstrap &&
+        exec /app/queryflux --config /tmp/queryflux.yaml
     environment:
       PYTHONPATH: /opt/venv/lib/python3.12/site-packages
       QUERYFLUX_ADMIN_PASSWORD: ${API_KEY:?Run make setup first}
-    volumes: ["../artifacts/queryflux.compose.yaml:/etc/queryflux/config.yaml:ro"]
+      API_KEY: ${API_KEY:?Run make setup first}
+    volumes: ["duckdb:/data"]
     ports: ["127.0.0.1:18081:18080"]
     depends_on:
       clickhouse: {condition: service_healthy}
+      duckdb-sync: {condition: service_healthy}
     healthcheck:
       test: [CMD, curl, -fsS, http://127.0.0.1:19000/health]
       interval: 5s
@@ -169,6 +202,7 @@ services:
       prometheus: {condition: service_healthy}
     profiles: [monitoring]
 volumes:
+  duckdb:
   redpanda:
   redis:
   postgres:

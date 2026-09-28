@@ -16,7 +16,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from backend.analytics import Analytics, where
+from backend.analytics import Analytics, recent_sql, where
 from shared.config import Settings
 from shared.storage import Metadata
 
@@ -237,6 +237,56 @@ def create_app(settings: Settings | None = None, live=None, metadata=None, analy
         }
         return result
 
+    @app.get("/api/v1/analytics/recent", dependencies=auth)
+    async def recent(
+        vehicle_ids: Annotated[str, Query(pattern=r"^V\d{6}(,V\d{6}){0,7}$")] = "V000001",
+        minutes: int = Query(15, ge=1, le=60),
+    ):
+        ids = list(dict.fromkeys(vehicle_ids.split(",")))
+        if any(not 1 <= int(value[1:]) <= settings.duckdb_vehicle_limit for value in ids):
+            raise HTTPException(422, f"Sample covers V000001–V{settings.duckdb_vehicle_limit:06d}")
+        if minutes > settings.duckdb_window_minutes:
+            raise HTTPException(422, "Requested window exceeds the configured sample window")
+        if settings.analytics_route != "queryflux":
+            raise HTTPException(
+                503, "Recent sample analytics require QueryFlux; use the routed demo"
+            )
+        result = await app.state.analytics.execute(
+            recent_sql(ids, minutes, settings.duckdb_max_age_seconds), workload="recent_sample"
+        )
+        metadata = next((row for row in result["data"] if row["vehicle_id"] == ""), None)
+        if metadata is None:
+            raise HTTPException(503, "Recent telemetry snapshot metadata is missing")
+        if any(int(value[1:]) > int(metadata["vehicle_limit"]) for value in ids):
+            raise HTTPException(503, "Snapshot scope differs from the configured vehicle limit")
+        if minutes > int(metadata["window_minutes"]):
+            raise HTTPException(503, "Snapshot window is smaller than the requested time range")
+        result["data"] = [
+            {
+                key: row[key]
+                for key in (
+                    "vehicle_id",
+                    "readings",
+                    "average_speed_kmh",
+                    "first_seen",
+                    "last_seen",
+                )
+            }
+            for row in result["data"]
+            if row["vehicle_id"]
+        ]
+        result["scope"] = {
+            "kind": "bounded_recent_sample",
+            "requested_minutes": minutes,
+            "window_minutes": metadata["window_minutes"],
+            "vehicle_limit": metadata["vehicle_limit"],
+            "row_limit": metadata["row_limit"],
+            "snapshot_epoch": metadata["snapshot_epoch"],
+            "max_age_seconds": settings.duckdb_max_age_seconds,
+            "complete_history": False,
+        }
+        return result
+
     @app.get("/api/v1/analytics/events", dependencies=auth)
     async def events(days: int = Query(1, ge=1, le=30), fleet_id: FleetFilter = None):
         return await app.state.analytics.execute(
@@ -270,6 +320,9 @@ def create_app(settings: Settings | None = None, live=None, metadata=None, analy
                 "analytics_latency_ms_total": analytics.latency_ms_total,
                 "analytics_last_latency_ms": analytics.last_latency_ms,
                 "queryflux_requests": analytics.queryflux_requests,
+                "engines": {
+                    engine: dict(values) for engine, values in analytics.engine_metrics.items()
+                },
             }
         }
 
@@ -282,8 +335,12 @@ def create_app(settings: Settings | None = None, live=None, metadata=None, analy
                 "metadata": "postgresql",
                 "analytics_configured_route": settings.analytics_route,
                 "engine": "clickhouse",
+                "engines": ["clickhouse", "duckdb"]
+                if settings.analytics_route == "queryflux"
+                else ["clickhouse"],
                 "routing_counts": dict(analytics.routes),
                 "last_successful_execution": analytics.last_execution if settings.debug else None,
+                "recent_executions": dict(analytics.recent_executions) if settings.debug else {},
                 "queryflux_verified_in_process": analytics.queryflux_requests > 0
                 and analytics.last_execution is not None
                 and analytics.last_execution["route"] == "queryflux",

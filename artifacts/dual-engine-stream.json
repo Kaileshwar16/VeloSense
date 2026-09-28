@@ -1,0 +1,49 @@
+{
+  "verified_at": "2026-09-28T18:43:38.629911+00:00",
+  "seeded_event_ids": [],
+  "seed_path": null,
+  "light": {
+    "data": [
+      {
+        "vehicle_id": "V000001",
+        "readings": 59,
+        "average_speed_kmh": 2.80491531122539,
+        "first_seen": "2026-09-28 18:42:19.892",
+        "last_seen": "2026-09-28 18:43:17.892"
+      }
+    ],
+    "execution": {
+      "route": "queryflux",
+      "engine": "duckdb",
+      "workload": "recent_sample",
+      "latency_ms": 14.95
+    },
+    "scope": {
+      "kind": "bounded_recent_sample",
+      "requested_minutes": 15,
+      "window_minutes": 120,
+      "vehicle_limit": 100,
+      "row_limit": 20000,
+      "snapshot_epoch": 1790620998.4114807,
+      "max_age_seconds": 120,
+      "complete_history": false
+    }
+  },
+  "heavy_execution": {
+    "route": "queryflux",
+    "engine": "clickhouse",
+    "workload": "historical",
+    "latency_ms": 122.75
+  },
+  "native_success_count_delta": {
+    "ClickHouse": 1.0,
+    "DuckDb": 1.0
+  },
+  "checks": [
+    "real API -> QueryFlux -> DuckDB",
+    "real API -> QueryFlux -> ClickHouse",
+    "native per-engine counters advanced",
+    "bounded snapshot scope disclosed"
+  ],
+  "passed": true
+}

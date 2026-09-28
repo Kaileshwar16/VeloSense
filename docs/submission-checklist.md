@@ -12,7 +12,7 @@ Commands, fresh results and artifacts are in [verification.md](verification.md).
 | 12–14 | Configurable idling, braking, speeding, faults | Done: environment thresholds and DTC episodes; tests cover detector behavior |
 | 18–21 | Batched generation, bounded buffering, load modes | Done: simulator CLI + progressive benchmark; low-rate pacing corrected; shutdown failures retain reports |
 | 22–26 | Validation, dedup, live state, metadata, history | Done: real Kafka → processor → Redis/ClickHouse → API test; PostgreSQL fleet/vehicle metadata |
-| 4, 27 | Existing QueryFlux, genuine analytical route | Done: upstream checkout/config re-inspected; digest-pinned container; ClickHouse only; routed test passes |
+| 4, 27 | Existing QueryFlux, genuine analytical route | Done: upstream checkout/config re-inspected; digest-pinned container; ClickHouse and bounded DuckDB sample; see queryflux.md for verification |
 | 28–29 | API, validation, pagination, basic authentication | Done: API key, CORS, parameterized metadata SQL, bounded templates; JWT/rate limiting optional and deferred |
 | 30–31 | Dashboard, polling, query counters, health | Done: real browser verification; added live/metadata/analytical counters; unknown/stale lag shown as unavailable |
 | 32–33 | Hot/warm/cold design; Iceberg | Hot/warm done; cold design documented; Parquet/MinIO and Iceberg deferred as allowed |
@@ -47,7 +47,7 @@ Commands, fresh results and artifacts are in [verification.md](verification.md).
 
 ## Intentionally deferred
 
-Cold archive, Iceberg, multi-engine routing, query caching, JWT/OIDC/RBAC/tenant
+Cold archive, Iceberg, automatic cost-based routing, query caching, JWT/OIDC/RBAC/tenant
 isolation, service TLS/authentication, general API rate limiting, durable rejected
 events, partition-owned processors, Kubernetes/Terraform, ML and agentic AI.
 These are optional/future features, not blockers for the authorized one-day demo.

@@ -2,7 +2,7 @@
   "uid": "valeosense-overview",
   "title": "ValeoSense pipeline overview",
   "schemaVersion": 39,
-  "version": 1,
+  "version": 2,
   "editable": false,
   "tags": [
     "valeosense"
@@ -624,6 +624,154 @@
           "unit": "short",
           "min": 0,
           "noValue": "No data"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 15,
+      "title": "QueryFlux completed queries by engine",
+      "type": "timeseries",
+      "description": "Native QueryFlux successful executions. Counters reset with QueryFlux.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "valeosense-prometheus"
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 45
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (engine_type) (queryflux_queries_total{status=\"Success\"})",
+          "legendFormat": "{{engine_type}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "noValue": "No observations"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 16,
+      "title": "QueryFlux mean execution latency by engine",
+      "type": "timeseries",
+      "description": "Native execution-duration histogram mean; no synthetic timing data.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "valeosense-prometheus"
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 45
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (engine_type) (rate(queryflux_query_duration_seconds_sum[$__rate_interval])) / sum by (engine_type) (rate(queryflux_query_duration_seconds_count[$__rate_interval]))",
+          "legendFormat": "{{engine_type}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "min": 0,
+          "noValue": "No observations"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 17,
+      "title": "QueryFlux failed queries by engine",
+      "type": "timeseries",
+      "description": "Native failed/cancelled completions; no series until observed.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "valeosense-prometheus"
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 52
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (engine_type) (queryflux_queries_total{status!=\"Success\"})",
+          "legendFormat": "{{engine_type}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "noValue": "No observations"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      }
+    },
+    {
+      "id": 18,
+      "title": "API analytical failures by workload engine",
+      "type": "timeseries",
+      "description": "API failures including transport and stale-snapshot errors. Engine identifies the fixed workload target.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "valeosense-prometheus"
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 52
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "valeosense_analytics_engine_errors_total",
+          "legendFormat": "{{engine}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "noValue": "No observations"
         },
         "overrides": []
       },

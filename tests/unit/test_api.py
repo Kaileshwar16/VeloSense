@@ -132,3 +132,64 @@ async def test_metrics_include_analytical_latency(api):
     assert metrics["analytics_latency_ms_total"] > 0
     assert metrics["analytics_last_latency_ms"] > 0
     assert metrics["analytics_running"] == metrics["analytics_waiting"] == 0
+
+
+@pytest.mark.parametrize(
+    "query", ["vehicle_ids=V000001%27OR1=1", "vehicle_ids=V000101", "minutes=61"]
+)
+async def test_recent_api_rejects_unbounded_or_invalid_selection(api, query):
+    assert (await api.get("/api/v1/analytics/recent?" + query)).status_code == 422
+
+
+async def test_recent_api_explicitly_requires_queryflux(api):
+    response = await api.get("/api/v1/analytics/recent")
+    assert response.status_code == 503
+    assert "QueryFlux" in response.json()["error"]["message"]
+
+
+@pytest.mark.parametrize("failed", [False, True])
+async def test_recent_api_discloses_scope_hides_metadata_row_and_surfaces_engine_failure(failed):
+    settings = Settings(api_key="test-key", debug=True, analytics_route="queryflux")
+    analytics = Analytics(settings)
+
+    async def execute(sql, *, workload):
+        assert workload == "recent_sample"
+        assert "FROM valeosense_recent.telemetry" in sql
+        if failed:
+            raise RuntimeError("Recent telemetry snapshot is stale")
+        return {
+            "data": [
+                {
+                    "vehicle_id": "",
+                    "window_minutes": 120,
+                    "vehicle_limit": 100,
+                    "row_limit": 20000,
+                    "snapshot_epoch": 100,
+                },
+                {
+                    "vehicle_id": "V000001",
+                    "readings": 3,
+                    "average_speed_kmh": 42,
+                    "first_seen": "2026-09-28 10:00:00",
+                    "last_seen": "2026-09-28 10:00:02",
+                },
+            ]
+        }
+
+    analytics.execute = execute
+    app = create_app(settings, live=TestLive(), metadata=TestMetadata(), analytics=analytics)
+    async with app.router.lifespan_context(app):
+        async with httpx.AsyncClient(
+            transport=httpx.ASGITransport(app),
+            base_url="http://test",
+            headers={"X-API-Key": "test-key"},
+        ) as client:
+            response = await client.get("/api/v1/analytics/recent")
+    if failed:
+        assert response.status_code == 503
+    else:
+        assert response.status_code == 200
+        assert len(response.json()["data"]) == 1
+        assert response.json()["data"][0]["vehicle_id"] == "V000001"
+        assert response.json()["scope"]["complete_history"] is False
+        assert response.json()["scope"]["row_limit"] == 20000

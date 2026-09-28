@@ -1,5 +1,5 @@
-# Existing open-source QueryFlux, local checkout 5d06d83 (0.3.0).
-# Start with scripts/run_queryflux.sh. No QueryFlux source is copied into ValeoSense.
+# Schema validated with the digest-pinned image (binary reports 0.0.1; DuckDB 1.5.1).
+# Also inspected upstream checkout 5d06d83; its version is not the image revision.
 queryflux:
   externalAddress: http://localhost:18080
   frontends:
@@ -17,11 +17,25 @@ clusters:
     endpoint: http://localhost:8123
     maxRunningQueries: 4
     maxResultBufferBytes: 16777216
+  valeosense-duckdb:
+    engine: duckDb
+    databasePath: /data/recent.duckdb
+    maxRunningQueries: 1
+    maxResultBufferBytes: 16777216
 clusterGroups:
   analytics:
     members: [valeosense-clickhouse]
     maxRunningQueries: 4
     maxQueuedQueries: 16
     capacityWaitTimeoutSecs: 10
-routers: []
+  recent-analytics:
+    members: [valeosense-duckdb]
+    maxRunningQueries: 1
+    maxQueuedQueries: 8
+    capacityWaitTimeoutSecs: 5
+routers:
+  - type: queryRegex
+    rules:
+      - regex: '(?i)\bFROM\s+valeosense_recent\.telemetry\b'
+        targetGroup: recent-analytics
 routingFallback: analytics

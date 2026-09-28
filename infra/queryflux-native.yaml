@@ -1,0 +1,27 @@
+# Preserve the existing host-native ClickHouse route without requiring a snapshot worker.
+# The two-engine demo uses queryflux.yaml in Docker Compose.
+queryflux:
+  externalAddress: http://localhost:18080
+  frontends:
+    trinoHttp:
+      enabled: true
+      port: 18080
+      maxConnections: 16
+  persistence:
+    type: inMemory
+  adminApi:
+    port: 19000
+clusters:
+  valeosense-clickhouse:
+    engine: clickHouse
+    endpoint: http://localhost:8123
+    maxRunningQueries: 4
+    maxResultBufferBytes: 16777216
+clusterGroups:
+  analytics:
+    members: [valeosense-clickhouse]
+    maxRunningQueries: 4
+    maxQueuedQueries: 16
+    capacityWaitTimeoutSecs: 10
+routers: []
+routingFallback: analytics

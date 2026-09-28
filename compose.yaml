@@ -1,0 +1,6 @@
+# Compose 2.24+ (include and !reset). Paths resolve relative to infra/.
+name: valeosense
+include:
+  - path:
+      - infra/docker-compose.yml
+      - infra/demo.compose.yml

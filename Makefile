@@ -1,6 +1,6 @@
 PY := .venv/bin/python
 COMPOSE := docker compose --env-file .env -f infra/docker-compose.yml
-.PHONY: setup seed up infra simulator demo demo-queryflux test integration lint frontend-build benchmark down queryflux api processor sql-evidence browser-test routed-api up-queryflux monitoring monitoring-down monitoring-test
+.PHONY: setup seed up infra simulator demo demo-queryflux test integration integration-queryflux verify-dual-engine lint frontend-build benchmark down queryflux api processor sql-evidence browser-test routed-api up-queryflux monitoring monitoring-down monitoring-test
 setup:
 	python3 scripts/setup_env.py
 	python3 -m venv .venv
@@ -25,6 +25,10 @@ test:
 	$(PY) -m pytest -q
 integration:
 	RUN_INTEGRATION=1 $(PY) -m pytest -q
+integration-queryflux:
+	docker compose exec -T -e RUN_INTEGRATION=1 -e EXPECT_QUERYFLUX=1 backend python -m pytest tests/integration -q
+verify-dual-engine:
+	docker compose exec -T backend python -m scripts.verify_dual_engine
 lint:
 	.venv/bin/ruff check .
 	.venv/bin/ruff format --check .

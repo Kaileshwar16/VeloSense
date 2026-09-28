@@ -29,15 +29,18 @@ History and new alerts are inserted into ClickHouse before a Redis transactional
 | Hot | Redis | Latest readings and alert state expire after 1 hour; online/active means event timestamp within 60 seconds; dedup expires after 24 hours |
 | Metadata | PostgreSQL | 100 fleets and 100,000 vehicles; no raw telemetry; parameterized reads and COPY-based seed |
 | Warm | ClickHouse | Raw validated telemetry and alert incidents; monthly partitions; vehicle/time/event ordering; 30-day TTL |
+| Sample | DuckDB over local Parquet | Up to 20,000 recent readings from the first 100 vehicles over 120 minutes; refreshed every 30 seconds; snapshots older than 120 seconds are rejected |
 | Cold | Future | S3/MinIO Parquet export is not implemented; warm TTL currently deletes old data |
 
 `alert_rules` is a small relational schema reserved for configuration, but detectors currently use environment/application settings; database-driven rules and rule editing are not implemented. No users, drivers, real owner information, or invented identities are stored.
 
 ## API, routing, and dashboard
 
-FastAPI reads Redis and PostgreSQL directly. Analytical requests use an independent async semaphore (four running, sixteen waiting, five-second admission timeout) and bounded result limits. The route is explicit: `direct` or `queryflux`; failures return 503 and never silently claim QueryFlux success. There is no result cache. QueryFlux is an existing external Apache-licensed project, not ValeoSense code. Only ClickHouse is connected in this submission; multiple-engine routing is future work.
+FastAPI reads Redis and PostgreSQL directly. Analytical requests use an independent async semaphore (four running, sixteen waiting, five-second admission timeout) and bounded result limits. The route is explicit: `direct` or `queryflux`; failures return 503 and never silently claim QueryFlux success. There is no result cache. QueryFlux is an existing external Apache-licensed project, not ValeoSense code. Compose connects ClickHouse and embedded DuckDB. QueryFlux matches the `valeosense_recent.telemetry` namespace with a SQL-regex rule for DuckDB and routes unmatched history/fleet templates to ClickHouse. It does not estimate workload cost or automatically select a best engine. Redis/PostgreSQL are persistence services, not QueryFlux backends. See [queryflux.md](queryflux.md) for the exact rule and engine evidence.
 
 QueryFlux's Trino HTTP client polls bounded pages and checks pagination origins before forwarding credentials. ClickHouse read views encapsulate FINAL so cross-dialect translation cannot reinterpret it as an alias. Timestamps are explicitly serialized as UTC strings because raw timestamp values were observed as null on the tested QueryFlux wire path. Historical predicates qualify the source timestamp to avoid ClickHouse alias substitution.
+
+A separate worker exports the bounded sample from ClickHouse and atomically replaces a validated Parquet file in a persistent volume. QueryFlux alone owns the embedded DuckDB database, whose view reads that file. The processor still writes only canonical ClickHouse history. This local materialization is not a cold archive.
 
 The React dashboard polls every three seconds after the previous batch completes; requests do not overlap indefinitely. Failed panels lose their old values and show errors. Registered/online counts, measured consumption rate, active alerts, idle vehicles, estimated cost, live readings, history, activity, and routing are sourced from real API responses. No fake timeseries or throughput values are embedded in the UI.
 
