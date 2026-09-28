@@ -52,6 +52,20 @@ make simulator             # 100K registered, 1K actively reporting, ~1K generat
 
 Open **http://localhost:3000**. Enter the `API_KEY` from your local `.env`; do not expose it in recordings. The backend is at http://localhost:8000 and interactive API schema at http://localhost:8000/docs. Published core service ports are bound to loopback. API key authentication protects `/api/v1/*`.
 
+If the dashboard cannot fetch data, check `docker compose --env-file .env -f infra/docker-compose.yml ps -a`
+and `curl http://localhost:8000/health`. Stopped services need `make up` (or
+`make demo-queryflux` if using the QueryFlux route). An invalid key can be replaced
+with **Update API key** in the dashboard. Failed panels clear their old values and
+retry independently; **Retry now** retries immediately. A healthy API does not imply
+an active telemetry stream: **Awaiting stream** means the processor is not reporting.
+
+For frontend development, run `make api` with the data services running, then
+`cd frontend && npm run dev`. Both Vite and the container's nginx proxy `/api` and
+`/health` to the backend on the same origin. `cd frontend && npm test` runs request
+regressions and Chromium dashboard checks with synthetic test fixtures; it requires
+an installed Chromium (`CHROMIUM_PATH` overrides `/usr/bin/chromium`). `make browser-test`
+separately checks the real running stack and saves desktop/mobile screenshots.
+
 For a containerized continuous simulator, use `make demo` instead of `make up` + `make simulator`. It starts safe demo load, not a benchmark. Do not run both simulators simultaneously when measuring performance.
 
 For the same continuous demo with QueryFlux-backed analytics, use

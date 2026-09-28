@@ -6,6 +6,8 @@ __pycache__/
 .env
 node_modules/
 frontend/dist/
+frontend/test-results/
+frontend/playwright-report/
 artifacts/*.log
 artifacts/*.pid
 artifacts/*.jsonl

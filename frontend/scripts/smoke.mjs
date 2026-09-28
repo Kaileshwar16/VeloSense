@@ -24,14 +24,22 @@ try {
   await page.getByRole('button', { name: 'V000013', exact: true }).first().waitFor();
   await page.getByRole('button', { name: '← Previous', exact: true }).click();
   await page.getByRole('button', { name: 'V000001', exact: true }).first().waitFor();
+  await page.waitForFunction(() => !Array.from(document.querySelectorAll('.empty')).some(
+    element => element.textContent.includes('Connecting to your fleet'),
+  ), null, { timeout: 45000 });
   assert.equal(await page.locator('.error').count(), 0, 'dashboard reported a failing service');
+  await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({ path: '../artifacts/dashboard-desktop.png', fullPage: true });
   await page.setViewportSize({ width: 390, height: 844 });
+  await page.evaluate(() => window.scrollTo(0, 0));
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true, 'mobile page overflow');
   await page.screenshot({ path: '../artifacts/dashboard-mobile.png', fullPage: true });
   assert.deepEqual(errors, [], 'browser JavaScript errors');
   const evidence = { verified_at: new Date().toISOString(), browser: await browser.version(),
     checks: ['API-key login', '100000 registry card', 'live-feed table', 'real historical query dialog',
-      'pagination next and previous', 'live/metadata/analytics query counters', 'no failing data panel', 'no JavaScript errors', 'desktop and mobile screenshots'],
+      'pagination next and previous', 'live/metadata/analytics query counters', 'all panels finished loading',
+      'no failing data panel', 'no JavaScript errors', 'no mobile page overflow', 'desktop and mobile screenshots'],
+    stream_status: await page.locator('.status-pill').innerText(),
     passed: true };
   await writeFile('../artifacts/browser-smoke.json', JSON.stringify(evidence, null, 2));
   console.log(JSON.stringify(evidence, null, 2));

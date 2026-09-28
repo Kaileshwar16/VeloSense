@@ -1,5 +1,5 @@
 {
-  "verified_at": "2026-09-27T16:06:53.732Z",
+  "verified_at": "2026-09-28T08:32:33.075Z",
   "browser": "146.0.7680.80",
   "checks": [
     "API-key login",
@@ -8,9 +8,12 @@
     "real historical query dialog",
     "pagination next and previous",
     "live/metadata/analytics query counters",
+    "all panels finished loading",
     "no failing data panel",
     "no JavaScript errors",
+    "no mobile page overflow",
     "desktop and mobile screenshots"
   ],
+  "stream_status": "Awaiting stream",
   "passed": true
 }
