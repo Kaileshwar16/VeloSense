@@ -15,7 +15,7 @@ Commands, fresh results and artifacts are in [verification.md](verification.md).
 | 4, 27 | Existing QueryFlux, genuine analytical route | Done: upstream checkout/config re-inspected; digest-pinned container; ClickHouse and bounded DuckDB sample; see queryflux.md for verification |
 | 28–29 | API, validation, pagination, basic authentication | Done: API key, CORS, parameterized metadata SQL, bounded templates; JWT/rate limiting optional and deferred |
 | 30–31 | Dashboard, polling, query counters, health | Done: real browser verification; added live/metadata/analytical counters; unknown/stale lag shown as unavailable |
-| 32–33 | Hot/warm/cold design; Iceberg | Hot/warm done; cold design documented; Parquet/MinIO and Iceberg deferred as allowed |
+| 32–33 | Hot/warm/cold design; Iceberg | Hot/warm done; optional local Iceberg archive added on 2026-09-30; see iceberg.md for scope and verification |
 | 34 | Safe result caching if implemented | Not applicable: no result cache |
 | 35–36 | Analytical admission, metrics and routing | Done: semaphore, bounded wait queue, cancellation test; latency totals exposed; optional Grafana validated |
 | 37, 60 | Tests and actual end-to-end verification | Done: unit/API tests, real integration, registry generation, small real stream, builds and browser checks |
@@ -47,9 +47,9 @@ Commands, fresh results and artifacts are in [verification.md](verification.md).
 
 ## Intentionally deferred
 
-Cold archive, Iceberg, automatic cost-based routing, query caching, JWT/OIDC/RBAC/tenant
-isolation, service TLS/authentication, general API rate limiting, durable rejected
-events, partition-owned processors, Kubernetes/Terraform, ML and agentic AI.
+Production archive maintenance/S3 qualification, automatic cost-based routing,
+query caching, JWT/OIDC/RBAC/tenant isolation, service TLS/authentication, general
+API rate limiting, partition-owned processors, Kubernetes/Terraform, ML and agentic AI.
 These are optional/future features, not blockers for the authorized one-day demo.
 `alert_rules` is a schema placeholder; runtime rules come from settings.
 

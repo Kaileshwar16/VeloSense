@@ -94,9 +94,34 @@ existing sustained-run limit; traffic is stopped after verification. See
 - [Original benchmark](../artifacts/benchmark-before-audit.json): earlier short
   run retained separately; the current summary uses the fresh benchmark.
 
+## Iceberg layer verification (2026-09-30)
+
+- Full Python regression suite: **106 passed, 3 skipped**. The three real-service
+  integration tests are opt-in. The sandbox run stalled at the existing API
+  TestClient tests; the completed run used local socket access outside the sandbox.
+- Focused archive suite: **14 passed**, using actual temporary Iceberg tables,
+  manifests and Parquet files. Includes lost catalog responses, failed Kafka
+  acknowledgements, atomic checkpoints, replay, raw malformed/tombstone records,
+  daily partitions and snapshot reads.
+- Real Kafka/PostgreSQL archive integration: **1 passed** on the host and
+  **1 passed** inside the new container using `make iceberg-integration`. Verifies
+  worker restart, exclusive ownership, raw bytes, offsets and snapshot reads.
+- `make iceberg` built the pinned optional image and reached healthy status.
+  A `make iceberg-status` observation showed **350,000 archived raw records**;
+  this was a point-in-time backlog observation, not a throughput benchmark.
+- The documented query command returned real `V000001` telemetry from the archive,
+  including Kafka offsets and nullable EV fuel fields.
+- Ruff lint/format, both Compose configurations and `git diff --check` passed.
+  The pre-existing restarting live processor was outside this archive change;
+  these checks do not establish current dashboard or live-pipeline health.
+
+Commands and operational limits are in [iceberg.md](iceberg.md). S3/MinIO, automatic
+maintenance, ClickHouse backfill and QueryFlux archive routing were not validated
+or implemented as part of the local archive verification.
+
 ## Limits
 
 No production load soak, HA/failover qualification, p95/p99 API benchmark, security
-scan campaign, coverage measurement, archive, cloud deployment or recorded video
+scan campaign, coverage measurement, production archive qualification, cloud deployment or recorded video
 is implied by these checks. The default CI runs lint, unit tests and frontend build;
 integration, browser and monitoring checks need the real local stack.

@@ -19,6 +19,8 @@ flowchart LR
   Registry[100K synthetic registry] --> Simulator
   Simulator -->|Kafka protocol| Redpanda
   Redpanda -->|manual commit| Processor
+  Redpanda -->|optional independent consumer| Iceberg[Iceberg raw archive]
+  Iceberg -->|catalog commits| PostgreSQL
   Processor -->|latest / alerts / dedup| Redis
   Processor -->|HTTP batch insert| ClickHouse
   Registry -->|COPY metadata| PostgreSQL
@@ -81,6 +83,12 @@ Optional monitoring: after starting the application, run `make monitoring` and o
 Prometheus and a 18-panel pipeline/routing dashboard are provisioned automatically.
 Use `make monitoring-test` to verify real scrapes and `make monitoring-down` to stop
 only monitoring. The default stack does not start these services. [Monitoring guide](docs/monitoring.md).
+
+Optional cold archive: run `make iceberg`, then `make iceberg-status`. This adds
+an independent Kafka consumer writing daily Iceberg/Parquet partitions with a
+PostgreSQL catalog, atomic archive checkpoints, and snapshot reads. Run
+`make iceberg-integration` for a real restart/read test. See the
+[Iceberg guide](docs/iceberg.md) for queries, recovery and retention limits.
 
 ```bash
 # Original direct-mode core command (no simulator):
@@ -189,10 +197,10 @@ The latest measured run sustained a 1K target: 999.87 generated readings/sec. Th
 - Single broker/replica and single processor; no high availability or production SLA.
 - 100K is the registry size, not a sustained 100K/sec claim.
 - Redis markers scale with event rate × 24h TTL; the local 256MiB noeviction limit can stop a long-running stream. Monitor memory and retention.
-- Warm data expires after 30 days; cold archive is not implemented.
+- Warm data expires after 30 days. The optional Iceberg archive retains raw Kafka records independently; it cannot recover records already expired from Kafka. Archive maintenance is manual.
 - No tenant isolation, RBAC, JWT/OIDC, Kafka producer authentication, Redis/ClickHouse authentication, or transport TLS. Local API key is a demo control.
 - `alert_rules` schema exists, but rules currently come from environment/application settings.
-- Invalid payloads are counted and skipped; a durable dead-letter queue is deferred.
+- The live processor counts and skips invalid payloads. The optional Iceberg archive preserves them as raw records; a dedicated dead-letter queue is deferred.
 - Out-of-order history is retained, but late readings do not retroactively repair detector windows.
 - DuckDB data is bounded and periodically refreshed, not complete history. Routing is by sample namespace, not automatic query-size detection. The legacy native launcher remains ClickHouse-only.
 - UI waste is a labelled top-20 ICE estimate, not measured fuel spend or a complete fleet invoice.
@@ -200,7 +208,7 @@ The latest measured run sustained a 1K target: 999.87 generated readings/sec. Th
 
 ## Future work
 
-Partition-owned consumer state, replay-safe multi-sink checkpointing, durable invalid-event storage, OAuth2/OIDC + JWT + RBAC + tenant isolation, authenticated service links, Parquet archive to S3/MinIO, then Iceberg for schema evolution/snapshots/time travel. Monitoring notifications/distributed tracing, automatic cost-based routing, cloud deployment, Kubernetes/Terraform, and predictive-maintenance ML are deferred. Prometheus/Grafana dashboards are available through the optional monitoring profile. **No ML model is required for the current solution.**
+Partition-owned consumer state, replay-safe multi-sink checkpointing, OAuth2/OIDC + JWT + RBAC + tenant isolation, authenticated service links, and production archive maintenance/S3 validation remain future work. The optional Iceberg profile now retains raw records (including invalid payloads) and supports snapshot reads. Monitoring notifications/distributed tracing, automatic cost-based routing, cloud deployment, Kubernetes/Terraform, and predictive-maintenance ML are deferred. Prometheus/Grafana dashboards are available through the optional monitoring profile. **No ML model is required for the current solution.**
 
 ## Open-source components and declarations
 

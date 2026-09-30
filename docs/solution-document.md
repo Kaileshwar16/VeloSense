@@ -83,7 +83,8 @@ Video timestamps below remain pending until the team records the demo.
 | Fleet dashboard and vehicle history | Must / Done | `frontend/src/main.jsx` | Pending |
 | Optional existing QueryFlux route | Should / Done | `backend/queryflux/`, `infra/queryflux.yaml` | Pending |
 | Optional Grafana dashboard | Could / Done | `backend/monitoring.py`, `infra/monitoring/` | Pending |
-| Multi-tenant identity and cold archive | Won't in prototype / Planned | No implementation | Not applicable |
+| Optional Iceberg raw archive and snapshot reads | Could / Done | `archive/`, `docs/iceberg.md` | Pending |
+| Multi-tenant identity | Won't in prototype / Planned | No implementation | Not applicable |
 
 ## 5. Solution Architecture
 
@@ -108,7 +109,9 @@ Metadata separates fleets and vehicles but deliberately repeats OEM/model values
 full catalog normalization is deferred. Historical rows denormalize fleet and
 vehicle attributes for analytical access. Redis is transient state, not an archive.
 Live state expires after one hour, dedup after 24 hours, and ClickHouse history
-after 30 days. Cold retention is not implemented. No formal multi-node CAP or
+after 30 days. The optional Iceberg consumer archives retained Kafka records
+independently, using daily Parquet partitions and atomic catalog checkpoints.
+Archive TTL/compaction remain manual; see [iceberg.md](iceberg.md). No formal multi-node CAP or
 availability claim is established by this single-node deployment.
 
 For capacity planning only, **assuming** 1 KB/event, 1K events/sec produces roughly
@@ -259,8 +262,8 @@ vehicle processing path.
 [ADRs](adr) document messaging, live state, workload separation, external QueryFlux
 and retention/scope. Major risks are single ownership, cross-sink recovery gaps,
 finite broker retention and Redis dedup memory. Next steps: partition-owned workers
-with stronger replay checkpoints; authenticated tenant boundaries; durable rejected
-events and Parquet archival before expanding analytical integrations.
+with stronger replay checkpoints; authenticated tenant boundaries; production
+archive maintenance and S3 validation before expanding analytical integrations.
 
 ## 13. Demo video
 

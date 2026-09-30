@@ -10,6 +10,9 @@ License checks were made against installed package license files, the local Quer
 | Redpanda v25.1.9 | Kafka-compatible streaming broker | BSL-1.1 source-available; [versioned license](https://github.com/redpanda-data/redpanda/blob/v25.1.9/licenses/bsl.md) |
 | Redis server 7.4 | Latest state, dedup and active alerts | RSALv2 or SSPLv1; [7.4 license](https://github.com/redis/redis/blob/7.4.0/LICENSE.txt); do not confuse with redis-py's license |
 | PostgreSQL 17 | Relational metadata | PostgreSQL license; [upstream COPYRIGHT](https://raw.githubusercontent.com/postgres/postgres/REL_17_STABLE/COPYRIGHT) |
+| PyIceberg 0.12.0 / pyiceberg-core 0.10.1 (optional) | Iceberg catalog, manifests, partition transforms and writes | Apache-2.0; installed distribution license files inspected 2026-09-30 |
+| PyArrow 25.0.1 (optional) | Archive Parquet reads/writes and FileIO | Apache-2.0; installed distribution `licenses/LICENSE.txt` |
+| SQLAlchemy 2.1.1 (optional) | Iceberg SQL catalog | MIT; installed distribution `licenses/LICENSE` |
 | ClickHouse 25.8 | Batched analytical storage | Apache-2.0; `/usr/share/doc/clickhouse-common-static/LICENSE` and `/usr/share/doc/clickhouse-server/LICENSE` inside the running image |
 | FastAPI 0.141.1 | HTTP API | MIT; installed distribution `licenses/LICENSE` |
 | Pydantic 2.13.5 | Canonical validation | MIT; installed distribution `licenses/LICENSE` |

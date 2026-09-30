@@ -30,7 +30,7 @@ History and new alerts are inserted into ClickHouse before a Redis transactional
 | Metadata | PostgreSQL | 100 fleets and 100,000 vehicles; no raw telemetry; parameterized reads and COPY-based seed |
 | Warm | ClickHouse | Raw validated telemetry and alert incidents; monthly partitions; vehicle/time/event ordering; 30-day TTL |
 | Sample | DuckDB over local Parquet | Up to 20,000 recent readings from the first 100 vehicles over 120 minutes; refreshed every 30 seconds; snapshots older than 120 seconds are rejected |
-| Cold | Future | S3/MinIO Parquet export is not implemented; warm TTL currently deletes old data |
+| Cold | Optional Iceberg | Independent Kafka consumer; daily raw Parquet partitions, PostgreSQL catalog and snapshot reads; no automatic archive TTL |
 
 `alert_rules` is a small relational schema reserved for configuration, but detectors currently use environment/application settings; database-driven rules and rule editing are not implemented. No users, drivers, real owner information, or invented identities are stored.
 
@@ -75,4 +75,4 @@ Vehicle ownership, authorization, and configuration would prioritize stronger co
 
 ## Known scaling boundary
 
-At the first 10K/sec test the producer met its target but the single processor fell behind. Backpressure is bounded at the producer, while broker lag is the measured buffer for a slower consumer. Broker retention, Redis memory, dedup TTL, and sink throughput require capacity planning. The 256MiB Redis cap with `noeviction` fails writes instead of silently discarding state; a long demo must be monitored. Replication, partition-owned consumer state, durable rejected-event storage, and archival are future work.
+At the first 10K/sec test the producer met its target but the single processor fell behind. Backpressure is bounded at the producer, while broker lag is the measured buffer for a slower consumer. Broker retention, Redis memory, dedup TTL, and sink throughput require capacity planning. The 256MiB Redis cap with `noeviction` fails writes instead of silently discarding state; a long demo must be monitored. Replication and partition-owned live consumer state remain future work. The optional [Iceberg archive](iceberg.md) retains raw Kafka records, including invalid payloads, with atomic archive checkpoints. It requires independent lag/capacity management and does not recover events already expired from Kafka.

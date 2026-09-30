@@ -58,4 +58,15 @@ monitoring-down:
 monitoring-test:
 	$(PY) -m scripts.verify_monitoring
 down:
-	$(COMPOSE) --profile demo --profile queryflux --profile monitoring down
+	$(COMPOSE) --profile demo --profile queryflux --profile monitoring --profile iceberg down
+.PHONY: iceberg iceberg-down iceberg-status iceberg-test iceberg-integration
+iceberg:
+	$(COMPOSE) --profile iceberg up --build -d --wait iceberg
+iceberg-down:
+	$(COMPOSE) --profile iceberg stop iceberg
+iceberg-status:
+	$(COMPOSE) exec -T iceberg python -m archive.cli status
+iceberg-test:
+	$(PY) -m pytest tests/unit/test_iceberg.py -q
+iceberg-integration:
+	$(COMPOSE) exec -T -e RUN_ICEBERG_INTEGRATION=1 iceberg python -m pytest tests/integration/test_iceberg_stack.py -q

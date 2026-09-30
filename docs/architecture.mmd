@@ -14,7 +14,9 @@ flowchart LR
     CH -->|"bounded export every 30 seconds"| Sample["Atomic local Parquet snapshot"]
     DuckDB -->|"reads view over snapshot"| Sample
     API -.->|"HTTP SQL · explicit direct mode"| CH
-    CH -.->|"Future only · export"| Cold["COLD · Parquet / S3\nnot implemented"]
+    Kafka -->|"Optional independent consumer"| Archive["Iceberg archive writer"]
+    Archive -->|"Atomic catalog commit"| PG
+    Archive -->|"Daily raw partitions"| Cold["COLD · Iceberg / Parquet\npersistent volume"]
     Exporter["Optional metrics exporter"] -->|"Authenticated HTTP metrics reads"| API
     Prom["Optional Prometheus"] -->|"HTTP scrape every 10s"| Exporter
     Prom -->|"native engine metrics"| QF

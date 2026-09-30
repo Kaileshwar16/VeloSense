@@ -160,11 +160,14 @@ existing host-native ClickHouse-only launcher using
 automatically initialized two-engine demo. The native launcher still requires an
 existing upstream binary/libraries; no new native-build portability is claimed.
 
-This deployment does not implement federated joins, automatic workload sizing,
-engine failover, result caching, durable cold archival or a throughput improvement
+This QueryFlux integration does not implement federated joins, automatic workload sizing,
+engine failover, result caching, archive routing or a throughput improvement
 claim. DuckDB is an embedded engine querying a refreshable bounded file, not a
 second canonical telemetry store. Redis's existing 256 MiB cap and 24-hour dedup
 TTL still limit sustained demo duration; monitor memory and stop traffic when done.
+
+An independent optional [Iceberg archive](iceberg.md) now provides raw cold storage
+and snapshot reads through its operator CLI; it does not use the DuckDB sample.
 
 ## Files changed for this integration
 

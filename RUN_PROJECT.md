@@ -206,7 +206,21 @@ routed demo and `DEBUG=true`.
 
 The browser report records stream status separately; passing dashboard checks does not prove a healthy live stream.
 
-## 9. Stop the demo
+## 9. Optional Iceberg archive
+
+```bash
+make iceberg                 # independent Kafka consumer, catalog and persistent files
+make iceberg-status          # snapshot IDs, row count and archived offset boundaries
+make iceberg-integration     # real isolated-topic restart/read test
+```
+
+The archive begins at the oldest Kafka records still retained. It stores raw
+telemetry and malformed messages independently of live processing, using daily
+Iceberg/Parquet partitions and the PostgreSQL catalog. Follow the
+[Iceberg guide](docs/iceberg.md) for queries, snapshot reads and recovery limits.
+Use `make iceberg-down` to stop only this worker.
+
+## 10. Stop the demo
 
 Stop just the simulator to keep the dashboard available for historical data:
 
@@ -220,4 +234,4 @@ Stop and remove all project containers, including optional profiles:
 make down
 ```
 
-`make down` preserves database and monitoring volumes. Start again using the same demo command from step 3; setup is only needed if dependencies or generated configuration are missing.
+`make down` preserves database, monitoring and Iceberg volumes. Start again using the same demo command from step 3; setup is only needed if dependencies or generated configuration are missing.
