@@ -1,0 +1,33 @@
+#cloud-config
+package_update: true
+packages:
+  - ca-certificates
+  - curl
+  - docker.io
+  - python3
+write_files:
+  - path: /etc/rancher/k3s/config.yaml
+    permissions: '0600'
+    content: |
+      write-kubeconfig-mode: "0600"
+      secrets-encryption: true
+      disable:
+        - traefik
+        - servicelb
+      kubelet-arg:
+        - "container-log-max-size=10Mi"
+        - "container-log-max-files=3"
+  - path: /etc/docker/daemon.json
+    permissions: '0644'
+    content: |
+      {"log-driver":"local","log-opts":{"max-size":"10m","max-file":"3"}}
+runcmd:
+  - [systemctl, enable, --now, docker]
+  - [sh, -c, 'curl --fail --silent --show-error --location https://raw.githubusercontent.com/k3s-io/k3s/v1.35.8+k3s1/install.sh -o /root/install-k3s.sh']
+  - [sh, -c, 'INSTALL_K3S_VERSION=v1.35.8+k3s1 sh /root/install-k3s.sh']
+  # Some Ubuntu cloud images have a host-level REJECT after their SSH rule. Keep it, but
+  # allow the local pod network. No new public application/API ports are opened.
+  - [sh, -c, 'iptables -C INPUT -s 10.42.0.0/16 -j ACCEPT || iptables -I INPUT 1 -s 10.42.0.0/16 -j ACCEPT']
+  - [sh, -c, 'if command -v netfilter-persistent >/dev/null; then netfilter-persistent save; fi']
+  - [sh, -c, 'k3s kubectl wait --for=condition=Ready node --all --timeout=180s']
+final_message: "ValeoSense VM bootstrap finished. Verify cloud-init status, then deploy the source bundle."

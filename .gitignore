@@ -15,3 +15,10 @@ artifacts/*.jsonl
 artifacts/queryflux.local.yaml
 artifacts/queryflux.compose.yaml
 artifacts/duckdb/
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfplan
+crash.log
+artifacts/cloud/

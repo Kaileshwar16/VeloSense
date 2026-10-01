@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: valeosense-config
+  labels:
+    app.kubernetes.io/name: valeosense-config
+    app.kubernetes.io/part-of: valeosense
+    valeosense.io/phase: infra
+data:
+  REDIS_URL: redis://redis:6379/0
+  KAFKA_BOOTSTRAP_SERVERS: redpanda:9092
+  CLICKHOUSE_URL: http://clickhouse:8123
+  ANALYTICS_ROUTE: direct
+  CORS_ORIGINS: http://localhost:3000
+  DEBUG: 'false'
+  MAX_ANALYTICAL_QUERIES: '2'

@@ -6,3 +6,8 @@ frontend/dist
 artifacts
 **/__pycache__
 *.docx
+*.pdf
+**/.terraform
+**/*.tfstate*
+**/*.tfvars
+**/*.tfplan

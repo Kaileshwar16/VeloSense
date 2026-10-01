@@ -1,7 +1,8 @@
 FROM python:3.12-slim
 WORKDIR /app
 COPY requirements.lock .
-RUN pip install --no-cache-dir -r requirements.lock && useradd --uid 10001 --create-home app
+RUN pip install --no-cache-dir -r requirements.lock && useradd --uid 10001 --create-home app \
+    && mkdir -p /app/data && chown app:app /app/data
 COPY --chown=app:app . .
 USER app
 ENV PYTHONUNBUFFERED=1

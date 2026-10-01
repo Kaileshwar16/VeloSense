@@ -1,0 +1,5 @@
+subscription_id         = "REPLACE_WITH_STUDENT_SUBSCRIPTION_ID"
+location                = "REPLACE_WITH_ALLOWED_REGION"
+ssh_public_key          = "ssh-ed25519 REPLACE_WITH_PUBLIC_KEY"
+admin_cidr              = "203.0.113.1/32" # Replace with your public IP.
+credit_and_price_checked = false

@@ -1,0 +1,46 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: seed
+  labels:
+    app.kubernetes.io/name: seed
+    app.kubernetes.io/part-of: valeosense
+    valeosense.io/phase: seed
+spec:
+  backoffLimit: 3
+  activeDeadlineSeconds: 900
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: seed
+        app.kubernetes.io/part-of: valeosense
+    spec:
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 60
+      containers:
+      - name: seed
+        image: valeosense-app:cloud
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            memory: 1Gi
+        command:
+        - python
+        - -m
+        - scripts.seed_metadata
+        envFrom:
+        - configMapRef:
+            name: valeosense-config
+        - secretRef:
+            name: valeosense-secrets
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 10001
+          capabilities:
+            drop:
+            - ALL
+      restartPolicy: Never
